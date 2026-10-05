@@ -79,9 +79,10 @@ export class MenuController {
   private cy: number = 340;
 
   constructor(container: HTMLElement, initialConfig: MenuConfig = DEFAULT_CONFIG) {
+    const firstNonEmpty = initialConfig.categories.findIndex((c) => c.kind !== 'empty');
     this.state = {
       config: initialConfig,
-      hotCategory: 0,
+      hotCategory: firstNonEmpty >= 0 ? firstNonEmpty : -1,
       hotSlot: -1,
       rotation: undefined,
       isOpen: true,
@@ -91,8 +92,24 @@ export class MenuController {
       container,
       { cx: this.cx, cy: this.cy },
       {
-        onCategoryHover: (index) => this.selectCategory(index),
-        onCategoryClick: (index) => this.selectCategory(index),
+        onCategoryHover: (index) => {
+          if (this.state.config.categories[index]?.kind === 'empty') {
+            if (this.state.hotCategory !== -1) {
+              this.state.hotCategory = -1;
+              this.state.hotSlot = -1;
+              this.render();
+            }
+            return;
+          }
+          this.selectCategory(index);
+        },
+        onCategoryClick: (index) => {
+          if (this.state.config.categories[index]?.kind === 'empty') {
+            this.commitAddCategory();
+            return;
+          }
+          this.selectCategory(index);
+        },
         onSlotHover: (slotIndex) => this.setHotSlot(slotIndex),
         onSlotClick: (slot, catIndex) => this.commitSlotClick(slot, catIndex),
         onAddCategoryClick: () => this.commitAddCategory(),
@@ -110,6 +127,11 @@ export class MenuController {
   }
 
   public selectCategory(index: number): void {
+    const cats = this.state.config.categories;
+    if (cats[index]?.kind === 'empty') {
+      this.commitAddCategory();
+      return;
+    }
     if (this.state.hotCategory === index) return;
     this.state.hotCategory = index;
     this.state.hotSlot = -1;
@@ -143,6 +165,17 @@ export class MenuController {
     if (hit.zone === 'ring') {
       // 상위 링: 각도로 분류를 고른다.
       if (hit.sector < cats.length) {
+        const cat = cats[hit.sector];
+        if (cat.kind === 'empty') {
+          // 커서가 빈칸 슬롯 위에 있을 때: hotCategory 선택 해제(-1), 하위 띠 숨김
+          if (this.state.hotCategory !== -1) {
+            this.state.hotCategory = -1;
+            this.state.hotSlot = -1;
+            this.render();
+          }
+          return;
+        }
+
         if (this.state.hotCategory !== hit.sector) {
           this.state.hotCategory = hit.sector;
           this.state.hotSlot = -1;
@@ -208,6 +241,9 @@ export class MenuController {
 
     if (catIdx >= 0 && catIdx < cats.length) {
       const cat = cats[catIdx];
+      if (cat.kind === 'empty') {
+        return { type: 'none' };
+      }
       const slotIdx = this.state.hotSlot;
 
       if (slotIdx >= 0 && slotIdx < cat.items.length) {
@@ -319,7 +355,10 @@ export class MenuController {
         this.state.config = payload.config;
       }
       this.state.isOpen = true;
-      this.state.hotCategory = 0;
+      const firstNonEmpty = this.state.config.categories.findIndex(
+        (c) => c.kind !== 'empty'
+      );
+      this.state.hotCategory = firstNonEmpty >= 0 ? firstNonEmpty : -1;
       this.state.hotSlot = -1;
       this.render();
       invokeCommand('frontend_log', { msg: 'menu:open render() complete' });

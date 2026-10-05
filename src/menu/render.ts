@@ -274,6 +274,29 @@ export class MenuRenderer {
     return s;
   }
 
+  private renderDashedCircle(size: number, parent: HTMLElement): SVGElement {
+    const s = this.createSvgElement(
+      'svg',
+      {
+        width: size,
+        height: size,
+        viewBox: '0 0 24 24',
+        fill: 'none',
+        stroke: 'currentColor',
+        'stroke-width': 1.3,
+        'stroke-linecap': 'round',
+        'aria-hidden': 'true',
+      },
+      parent
+    );
+    this.createSvgElement(
+      'circle',
+      { cx: 12, cy: 12, r: 9.5, 'stroke-dasharray': '2.8 3' },
+      s
+    );
+    return s;
+  }
+
   private createLabel(x: number, y: number, parent: HTMLElement): HTMLElement {
     return this.createElement(
       'span',
@@ -307,7 +330,48 @@ export class MenuRenderer {
 
     // 3. 상위 칸 렌더링
     this.ringContainer.textContent = '';
+    const firstEmptyIndex = L.sectors.findIndex(
+      (s) => s.category.kind === 'empty'
+    );
+
     L.sectors.forEach((s) => {
+      if (s.category.kind === 'empty') {
+        const isFirstEmpty = s.index === firstEmptyIndex;
+        const b = this.createElement(
+          'button',
+          {
+            class: 'add empty-slot',
+            style: `clip-path:path('${s.path}')`,
+            'aria-label': s.category.label || '분류 추가',
+          },
+          this.ringContainer
+        );
+
+        const lab = this.createLabel(s.labelX, s.labelY, b);
+        if (isFirstEmpty) {
+          this.renderPlus(30, lab);
+          const text =
+            s.category.label && s.category.label !== '빈칸'
+              ? s.category.label
+              : '분류 추가';
+          this.createElement('span', { text }, lab);
+        } else {
+          this.renderDashedCircle(30, lab);
+          if (s.category.label && s.category.label !== '빈칸') {
+            this.createElement('span', { text: s.category.label }, lab);
+          }
+        }
+
+        b.addEventListener('mouseenter', () =>
+          this.callbacks.onCategoryHover?.(s.index)
+        );
+        b.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.callbacks.onAddCategoryClick?.();
+        });
+        return;
+      }
+
       const isSelected = s.selected;
       const b = this.createElement(
         'button',

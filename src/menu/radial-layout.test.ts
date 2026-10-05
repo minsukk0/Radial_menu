@@ -303,4 +303,60 @@ describe('layout calculation', () => {
       }
     }
   });
+
+  describe('Empty category (empty slot) handling', () => {
+    const configWithEmpty: CategoryConfig[] = [
+      {
+        id: 'cat-1',
+        kind: 'app',
+        label: '앱',
+        items: [{ label: '메모장', path: 'notepad.exe' }],
+      },
+      {
+        id: 'cat-2',
+        kind: 'terminal',
+        label: '터미널',
+        items: [{ label: 'PowerShell', action: 'open' }],
+      },
+      {
+        id: 'slot-3',
+        kind: 'empty',
+        label: '빈칸',
+        items: [],
+      },
+      {
+        id: 'cat-4',
+        kind: 'system',
+        label: '시스템',
+        items: [{ label: '잠금', fn: 'lock' }],
+      },
+    ];
+
+    it('creates 4 sectors with step 90 and places empty category in slot 2', () => {
+      const res = layout(configWithEmpty, 0);
+      expect(res.sectorCount).toBe(4);
+      expect(res.step).toBe(90);
+      expect(res.sectors.length).toBe(4);
+      expect(res.sectors[2].category.kind).toBe('empty');
+      expect(res.sectors[2].axis).toBe(180);
+      expect(res.sectors[2].selected).toBe(false);
+      expect(res.addSector).toBeNull();
+    });
+
+    it('does not generate sub-band or selection when hot points to empty slot', () => {
+      const res = layout(configWithEmpty, 2);
+      expect(res.selection.visible).toBe(false);
+      expect(res.selection.axis).toBeNull();
+      expect(res.sub).toBeNull();
+      expect(res.sectors[2].selected).toBe(false);
+    });
+
+    it('generates sub-band normally when hot points to valid slot 3 (system)', () => {
+      const res = layout(configWithEmpty, 3);
+      expect(res.selection.visible).toBe(true);
+      expect(res.selection.axis).toBe(270);
+      expect(res.sub).not.toBeNull();
+      expect(res.sub?.axis).toBe(270);
+    });
+  });
 });

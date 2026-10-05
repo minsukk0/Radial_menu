@@ -221,7 +221,12 @@ export function layout(
   const step = 360 / n;
   const half = step / 2;
   let activeHot = hot;
-  if (activeHot >= count) activeHot = -1;
+  if (
+    activeHot >= count ||
+    (activeHot >= 0 && categories[activeHot]?.kind === 'empty')
+  ) {
+    activeHot = -1;
+  }
 
   const sectors: LayoutSector[] = categories.map((cat, i) => {
     const axis = i * step;
@@ -239,7 +244,8 @@ export function layout(
 
   // 빈칸 중 첫 칸에만 "분류 추가"를 둔다.
   let addSector: LayoutAddSector | null = null;
-  if (count < n) {
+  const hasEmptyCategory = categories.some((c) => c.kind === 'empty');
+  if (count < n && !hasEmptyCategory) {
     const aa = count * step;
     const ap = m.xy(g.ringLabelRadius, aa);
     addSector = {

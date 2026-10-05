@@ -177,4 +177,65 @@ describe('MenuController & Interaction logic', () => {
     expect(useEl?.getAttribute('href')).toBe('#i-terminal');
     expect(slot1.querySelector('.mono')).toBeNull();
   });
+
+  it('supports empty slots (1, 2, 4 layout) and commitAddCategory on click', async () => {
+    const configWithEmptySlot: MenuConfig = {
+      version: 1,
+      accent: '#1E9BFF',
+      categories: [
+        {
+          id: 'apps',
+          kind: 'app',
+          label: '앱',
+          items: [{ label: '메모장', path: 'notepad.exe' }],
+        },
+        {
+          id: 'terminal',
+          kind: 'terminal',
+          label: '터미널',
+          items: [{ label: '새 창', action: 'open' }],
+        },
+        {
+          id: 'slot-3',
+          kind: 'empty',
+          label: '빈칸',
+          items: [],
+        },
+        {
+          id: 'system',
+          kind: 'system',
+          label: '시스템',
+          items: [{ label: '잠금', fn: 'lock' }],
+        },
+      ],
+    };
+
+    const ctrl = new MenuController(container, configWithEmptySlot);
+
+    // Initial state: hotCategory is 0 (first non-empty category)
+    expect(ctrl.state.hotCategory).toBe(0);
+
+    // Empty slot (slot 2) is rendered as button with class 'add' and 'empty-slot'
+    const emptyBtn = container.querySelector('button.add.empty-slot') as HTMLButtonElement;
+    expect(emptyBtn).not.toBeNull();
+
+    // Hover over slot 2 (180 deg / 6 o'clock): (340, 440)
+    ctrl.handleCursorMove(340, 440);
+    // hotCategory is reset to -1, hotSlot to -1
+    expect(ctrl.state.hotCategory).toBe(-1);
+    expect(ctrl.state.hotSlot).toBe(-1);
+
+    // resolveTarget() should return none
+    expect(ctrl.resolveTarget().type).toBe('none');
+
+    // Clicking the empty button calls commitAddCategory
+    let committedResult: CommitTarget | null = null;
+    await listenEvent<{ target: CommitTarget }>('menu:commit_result', (payload) => {
+      committedResult = payload.target;
+    });
+
+    emptyBtn.click();
+    expect(committedResult).not.toBeNull();
+    expect(committedResult!.type).toBe('add_category');
+  });
 });
