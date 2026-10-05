@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>Radial Menu — 항목 추가</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../shared/tokens.css">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--rm-color-surface-dialog, rgba(11, 17, 20, 0.96));
+      color: var(--rm-color-text-primary, #EAF6F6);
+      font-family: 'IBM Plex Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+      user-select: none;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    button, input, select {
+      font: inherit;
+      color: inherit;
+    }
+    .header {
+      flex: none;
+      height: 52px;
+      padding: 0 18px;
+      border-bottom: 1px solid rgba(166, 241, 236, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--rm-color-text-primary, #EAF6F6);
+    }
+    .btn-close {
+      width: 32px;
+      height: 32px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--rm-color-text-secondary, #9FB4B6);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .12s, color .12s;
+    }
+    .btn-close:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFF;
+    }
+    .container {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+    }
+    .sidebar {
+      width: 220px;
+      flex: none;
+      border-right: 1px solid rgba(166, 241, 236, 0.14);
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .sidebar-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--rm-color-text-secondary, #9FB4B6);
+    }
+    .preview-box {
+      width: 180px;
+      height: 180px;
+      margin: 0 auto;
+      background: rgba(3, 8, 10, 0.6);
+      border: 1px solid rgba(166, 241, 236, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .main-content {
+      flex: 1;
+      padding: 20px 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .kind-tabs {
+      display: inline-flex;
+      gap: 4px;
+      padding: 3px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      width: fit-content;
+    }
+    .kind-tab {
+      padding: 6px 14px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--rm-color-text-secondary, #9FB4B6);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .12s;
+    }
+    .kind-tab.active {
+      background: color-mix(in srgb, var(--rm-accent, #1E9BFF) 40%, rgba(255, 255, 255, 0.05));
+      color: #FFF;
+      font-weight: 600;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--rm-color-text-secondary, #9FB4B6);
+    }
+    .form-input {
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(166, 241, 236, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      color: #EAF6F6;
+      font-size: 13px;
+      outline: none;
+      transition: border-color .12s, box-shadow .12s;
+    }
+    .form-input:focus {
+      border-color: var(--rm-accent, #1E9BFF);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--rm-accent, #1E9BFF) 25%, transparent);
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .chips-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .chip {
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px dashed rgba(44, 232, 255, 0.4);
+      background: rgba(44, 232, 255, 0.08);
+      color: #8FE9F5;
+      font-family: 'IBM Plex Mono', Consolas, monospace;
+      font-size: 11.5px;
+      cursor: pointer;
+      transition: all .12s;
+    }
+    .chip:hover {
+      background: rgba(44, 232, 255, 0.2);
+      border-color: #8FE9F5;
+    }
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--rm-color-text-rest, #C6D8DA);
+      margin-top: 4px;
+    }
+    .toggle-switch {
+      position: relative;
+      width: 32px;
+      height: 18px;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.16);
+      transition: background .14s;
+    }
+    .toggle-switch::after {
+      content: "";
+      position: absolute;
+      left: 2px;
+      top: 2px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #C6D8DA;
+      transition: transform .14s, background .14s;
+    }
+    .toggle-row.on .toggle-switch {
+      background: var(--rm-accent, #1E9BFF);
+    }
+    .toggle-row.on .toggle-switch::after {
+      transform: translateX(14px);
+      background: #FFFFFF;
+    }
+    .footer {
+      flex: none;
+      height: 56px;
+      padding: 0 20px;
+      border-top: 1px solid rgba(166, 241, 236, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .btn {
+      height: 36px;
+      padding: 0 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(166, 241, 236, 0.26);
+      background: rgba(255, 255, 255, 0.05);
+      color: #EAF6F6;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all .12s;
+    }
+    .btn:hover {
+      border-color: rgba(166, 241, 236, 0.55);
+    }
+    .btn.primary {
+      background: var(--rm-accent, #1E9BFF);
+      border-color: transparent;
+      font-weight: 600;
+    }
+    .btn.primary:hover {
+      filter: brightness(1.08);
+    }
+    .item-chip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(166, 241, 236, 0.12);
+      font-size: 12px;
+      color: var(--rm-color-text-primary, #EAF6F6);
+    }
+    .item-chip:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(166, 241, 236, 0.25);
+    }
+    .btn-del-item {
+      border: 0;
+      border-radius: 4px;
+      background: rgba(255, 75, 75, 0.15);
+      color: #FF7B7B;
+      padding: 2px 6px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all .12s;
+      flex-shrink: 0;
+    }
+    .btn-del-item:hover {
+      background: rgba(255, 75, 75, 0.4);
+      color: #FFF;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1 id="dlg-title">항목 추가 / 관리</h1>
+    <button class="btn-close" id="btn-close" aria-label="닫기">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+    </button>
+  </div>
+
+  <div class="container">
+    <div class="sidebar">
+      <span class="sidebar-label">들어갈 분류</span>
+      <select id="sel-category" class="form-input" style="height: 34px;">
+        <option value="apps">앱 (Apps)</option>
+        <option value="terminal">터미널 (Terminal)</option>
+        <option value="folder">폴더·주소 (Folders)</option>
+        <option value="system">시스템 (System)</option>
+      </select>
+      <div class="preview-box">
+        <svg width="140" height="140" viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="60" fill="none" stroke="#A6F1EC" stroke-opacity="0.3" stroke-width="1"></circle>
+          <circle cx="100" cy="100" r="14" fill="#040C10" stroke="#A6F1EC" stroke-width="1"></circle>
+          <text x="100" y="104" text-anchor="middle" font-size="12" fill="#8FE9F5" font-weight="600" id="preview-text">NEW</text>
+        </svg>
+      </div>
+
+      <div style="flex:1; display:flex; flex-direction:column; min-height:0; margin-top:6px;">
+        <span class="sidebar-label" style="margin-bottom:6px;">등록된 항목 (삭제)</span>
+        <div id="items-list" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:5px; padding-right:2px;">
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="form-group">
+        <label class="form-label">분류 종류</label>
+        <div class="kind-tabs" id="kind-tabs">
+          <button class="kind-tab active" data-kind="app">앱</button>
+          <button class="kind-tab" data-kind="terminal">터미널</button>
+          <button class="kind-tab" data-kind="folder">폴더·주소</button>
+          <button class="kind-tab" data-kind="system">시스템</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">항목 이름 (Label)</label>
+        <input type="text" id="inp-label" class="form-input" placeholder="메뉴에 표시할 이름 입력" />
+      </div>
+
+      <!-- App Fields -->
+      <div id="section-app" class="kind-section">
+        <div class="form-group">
+          <label class="form-label">실행 파일 경로 (Path)</label>
+          <div class="row">
+            <input type="text" id="inp-app-path" class="form-input" style="flex:1" placeholder="C:\Path\To\Program.exe" />
+            <button class="btn" id="btn-browse-app">찾아보기...</button>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top: 10px;">
+          <label class="form-label">실행 인수 (Args)</label>
+          <input type="text" id="inp-app-args" class="form-input" placeholder="--example-arg" />
+        </div>
+        <div class="toggle-row" id="tog-app-admin">
+          <div class="toggle-switch"></div>
+          <span>관리자 권한으로 실행 (Run as Administrator)</span>
+        </div>
+      </div>
+
+      <!-- Terminal Fields -->
+      <div id="section-terminal" class="kind-section" style="display:none">
+        <div class="form-group">
+          <label class="form-label">실행 동작</label>
+          <div class="row">
+            <select id="sel-term-action" class="form-input" style="width:140px">
+              <option value="run">명령 실행 (run)</option>
+              <option value="open">새 창 열기 (open)</option>
+            </select>
+            <select id="sel-term-shell" class="form-input" style="width:140px">
+              <option value="powershell">PowerShell</option>
+              <option value="cmd">CMD</option>
+              <option value="wsl">WSL</option>
+              <option value="gitbash">Git Bash</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top: 10px;">
+          <label class="form-label">명령어 또는 스크립트</label>
+          <input type="text" id="inp-term-cmd" class="form-input" placeholder="python script.py &quot;{선택한 파일}&quot;" />
+          <div class="chips-group">
+            <span class="chip" data-val="&quot;{현재 폴더}&quot;">+ {현재 폴더}</span>
+            <span class="chip" data-val="&quot;{선택한 파일}&quot;">+ {선택한 파일}</span>
+            <span class="chip" data-val="&quot;{활성 창 제목}&quot;">+ {활성 창 제목}</span>
+            <span class="chip" data-val="&quot;{클립보드}&quot;">+ {클립보드}</span>
+          </div>
+        </div>
+        <div class="toggle-row" id="tog-term-notify" style="margin-top: 10px;">
+          <div class="toggle-switch"></div>
+          <span>완료 시 알림 표시 (Notify on done)</span>
+        </div>
+      </div>
+
+      <!-- Folder Fields -->
+      <div id="section-folder" class="kind-section" style="display:none">
+        <div class="form-group">
+          <label class="form-label">대상 폴더 또는 웹 URL (Target)</label>
+          <div class="row">
+            <input type="text" id="inp-folder-target" class="form-input" style="flex:1" placeholder="%USERPROFILE%\Downloads 또는 https://..." />
+            <button class="btn" id="btn-browse-folder">찾아보기...</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Fields -->
+      <div id="section-system" class="kind-section" style="display:none">
+        <div class="form-group">
+          <label class="form-label">시스템 기능 선택</label>
+          <select id="sel-system-fn" class="form-input">
+            <option value="lock">화면 잠금 (Lock Workstation)</option>
+            <option value="sleep">절전 모드 (Sleep)</option>
+            <option value="volumeMute">음소거 전환 (Toggle Mute)</option>
+            <option value="displayOff">화면 끄기 (Display Off)</option>
+            <option value="screensaver">화면 보호기 (Screensaver)</option>
+            <option value="radialSettings">설정 (Settings)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <button class="btn" id="btn-cancel">취소</button>
+    <button class="btn primary" id="btn-save">항목 저장</button>
+  </div>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

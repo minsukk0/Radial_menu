@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>시안 B · 다크 계기판</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+.rm button{position:absolute;margin:0;padding:0;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.rm button:focus{outline:none}
+.rm a.sub{position:absolute;display:block;text-decoration:none;cursor:pointer;outline:none}
+.rm .sec,.rm .sub,.rm .add{left:0;top:0;width:760px;height:760px}
+.rm .add{color:rgba(198,216,218,.55);transition:color .14s,background-color .14s}
+.rm .add:hover,.rm .add:focus-visible{color:#A6F1EC;background-color:rgba(166,241,236,.07)}
+.rm .lab{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;white-space:nowrap;pointer-events:none}
+.rm .fan{position:absolute;left:0;top:0;width:760px;height:760px;pointer-events:none}
+.rm .sec.on{color:#FFFFFF}
+.rm .sel{position:absolute;left:0;top:0;width:760px;height:760px;pointer-events:none;transform-origin:380px 380px;transition:transform .22s cubic-bezier(.3,.7,.2,1),opacity .15s}
+.rm .sel.off{opacity:0}
+@media (prefers-reduced-motion:reduce){.rm .sel{transition:none}}
+.rm .lab{text-shadow:0 1px 3px rgba(4,12,16,.6)}
+.rm .lab svg{filter:drop-shadow(0 1px 2px rgba(4,12,16,.5))}
+.rm .mono{width:20px;height:20px;border-radius:6px;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:9px;line-height:1;font-weight:600;letter-spacing:-.02em;text-shadow:none}
+.rm .sec{color:#C6D8DA;transition:color .16s}
+.rm .sec .lab{transition:transform .2s cubic-bezier(.3,.7,.2,1)}
+.rm .sec.on .lab{transform:translate(-50%,-50%) scale(1.07)}
+.rm .sub{pointer-events:auto;color:#C6D8DA;transition:color .14s}
+.rm .sub::before{content:"";position:absolute;left:0;top:0;right:0;bottom:0;opacity:0;transition:opacity .14s;background:radial-gradient(circle at 380px 380px,color-mix(in srgb,var(--accent) 32%,transparent) 200px,color-mix(in srgb,var(--accent) 50%,transparent) 244px,color-mix(in srgb,var(--accent) 68%,transparent) 272px)}
+.rm .sub:hover,.rm .sub:focus-visible,.rm .sub.demo{color:#FFFFFF;text-shadow:0 1px 2px rgba(4,22,46,.5)}
+.rm .sub:hover::before,.rm .sub:focus-visible::before,.rm .sub.demo::before{opacity:1}
+.rm .fan:hover .sub.demo:not(:hover){color:#C6D8DA;text-shadow:none}
+.rm .fan:hover .sub.demo:not(:hover)::before{opacity:0}
+.rm .sub.plus{color:rgba(198,216,218,.6)}
+.rm .sub.plus::before{background:rgba(166,241,236,.09)}
+.rm .sub.plus:hover,.rm .sub.plus:focus-visible{color:#A6F1EC;text-shadow:none}
+.rm .pop{transform-origin:380px 380px;animation:pop-in .22s cubic-bezier(.2,.8,.2,1) both}
+.rm .fan.pop{animation:none}
+.rm .fan .sub{transform-origin:380px 380px;animation:sub-in .24s cubic-bezier(.2,.8,.2,1) both}
+@keyframes pop-in{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+@keyframes sub-in{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.rm .pop,.rm .fan .sub{animation:none}.rm .sec .lab{transition:none}}
+.rm.soft .sub:not(.plus)::before{background:radial-gradient(circle at 380px 380px,color-mix(in srgb,var(--accent) 16%,transparent) 200px,color-mix(in srgb,var(--accent) 30%,transparent) 244px,color-mix(in srgb,var(--accent) 46%,transparent) 272px)}
+.rm .sel .arc{stroke-linecap:round;filter:drop-shadow(0 0 4px rgba(44,232,255,.65))}
+.rm.fade div.pop:not(.fan){background:radial-gradient(circle at 380px 380px,rgba(3,8,10,.74) 196px,rgba(3,8,10,.34) 278px) !important}
+.rm.noarc path[stroke-width="4"]{display:none}
+.rm [stroke="#A6F1EC"],.rm .ln{stroke-width:.6px}
+.rm.nolines [stroke="#A6F1EC"],.rm.nolines .ln{display:none}
+.rm > div[aria-hidden]{-webkit-backdrop-filter:blur(var(--blur,0px));backdrop-filter:blur(var(--blur,0px))}
+.rm .hub{transition:color .1s,border-color .1s}
+.rm .hub:hover,.rm .hub:focus-visible{color:#2CE8FF !important;border-color:#2CE8FF !important}
+</style>
+</helmet>
+<div class="rm {{mods}}" style="position: relative; width: 760px; height: 760px; overflow: hidden; background: #8D9BA8; color: #EAF6F6; font-family: 'IBM Plex Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; --accent: {{accent}}; --blur: {{blur}}">
+<svg width="0" height="0" aria-hidden="true" style="position: absolute">
+<defs>
+<symbol id="i-apps" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"></rect><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"></rect><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"></rect><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"></rect></symbol>
+<symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2.5"></rect><path d="m7 9.5 3 2.5-3 2.5M12.5 15H17"></path></symbol>
+<symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7.5a2 2 0 0 1 2-2h3.6l2 2.2h7.4a2 2 0 0 1 2 2v7.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"></path></symbol>
+<symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3v8.5"></path><path d="M7.1 6.7a8 8 0 1 0 9.8 0"></path></symbol>
+<symbol id="i-window" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"></rect><path d="M3 9.5h18"></path></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"></path></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2.5"></rect><path d="M8.5 8.5h7M8.5 12h7M8.5 15.5h4"></path></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><ellipse cx="12" cy="12" rx="3.6" ry="8.5"></ellipse><path d="M3.5 12h17"></path></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"></rect><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"></path></symbol>
+<symbol id="i-sleep" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"></path></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h7M17 7h3M4 12h1.5M11 12h9M4 17h9M19 17h1"></path><circle cx="14" cy="7" r="2.2"></circle><circle cx="8" cy="12" r="2.2"></circle><circle cx="16" cy="17" r="2.2"></circle></symbol>
+<symbol id="i-activity" viewBox="0 0 24 24"><path d="M3 12h4l2.5-6 4.5 12 2.5-6H21"></path></symbol>
+</defs>
+</svg>
+<svg width="760" height="760" viewBox="0 0 760 760" aria-hidden="true" style="position: absolute; left: 0; top: 0; pointer-events: none">
+<rect x="36" y="64" width="408" height="300" rx="10" fill="#F4F5F7"></rect>
+<rect x="36" y="64" width="408" height="34" rx="10" fill="#E2E5EA"></rect>
+<path d="M64 132h250M64 160h320M64 188h280M64 216h330M64 244h210M64 272h300M64 300h260M64 328h180" fill="none" stroke="#C5CAD3" stroke-width="8" stroke-linecap="round"></path>
+<rect x="372" y="436" width="352" height="280" rx="10" fill="#20252B"></rect>
+<rect x="372" y="436" width="352" height="34" rx="10" fill="#2C333B"></rect>
+<path d="M400 506h230M400 534h280M400 562h190M400 590h260M400 618h220M400 646h270M400 674h150" fill="none" stroke="#3D4650" stroke-width="8" stroke-linecap="round"></path>
+</svg>
+<div aria-hidden="true" style="position: absolute; left: 194px; top: 194px; width: 372px; height: 372px; border-radius: 50%; background: radial-gradient(circle, rgba(3, 8, 10, 0.7) 0%, rgba(3, 8, 10, 0.7) 50%, rgba(3, 8, 10, 0.78) 100%); box-shadow: 0 14px 44px rgba(3, 8, 10, 0.26); pointer-events: none"></div>
+<svg width="760" height="760" viewBox="0 0 760 760" aria-hidden="true" style="position: absolute; left: 0; top: 0; pointer-events: none">
+<defs><radialGradient id="dv" gradientUnits="userSpaceOnUse" cx="380" cy="380" r="186"><stop offset="0.2" stop-opacity="0" style="stop-color: #A6F1EC"></stop><stop offset="0.62" stop-opacity="0.26" style="stop-color: #A6F1EC"></stop><stop offset="1" stop-opacity="0.05" style="stop-color: #A6F1EC"></stop></radialGradient></defs>
+<circle cx="380" cy="380" r="186" fill="none" stroke="#A6F1EC" stroke-opacity="0.55"></circle>
+<path class="ln" d="{{dividers}}" fill="none" stroke="url(#dv)"></path>
+</svg>
+<div class="sel {{selc}}" style="transform: rotate({{rot}}deg)">
+<svg width="760" height="760" viewBox="0 0 760 760" aria-hidden="true">
+<defs><radialGradient id="selg" gradientUnits="userSpaceOnUse" cx="380" cy="380" r="218"><stop offset="0.174" stop-opacity="0.22" style="stop-color: var(--accent)"></stop><stop offset="0.55" stop-opacity="0.52" style="stop-color: var(--accent)"></stop><stop offset="0.853" stop-opacity="0.82" style="stop-color: var(--accent)"></stop><stop offset="1" stop-opacity="0" style="stop-color: var(--accent)"></stop></radialGradient><radialGradient id="sele" gradientUnits="userSpaceOnUse" cx="380" cy="380" r="186"><stop offset="0.25" stop-opacity="0" style="stop-color: #FFFFFF"></stop><stop offset="1" stop-opacity="0.42" style="stop-color: #FFFFFF"></stop></radialGradient></defs>
+<path d="{{selWedge}}" fill="url(#selg)"></path>
+<path d="{{selEdge}}" fill="none" stroke="url(#sele)" stroke-width="1"></path>
+<path class="arc" d="{{selArc}}" fill="none" stroke="#2CE8FF" stroke-width="4"></path>
+</svg>
+</div>
+<sc-for list="{{secs}}" as="s" hint-placeholder-count="4">
+<button class="sec {{s.cls}}" onMouseEnter="{{s.pick}}" onFocus="{{s.pick}}" onClick="{{s.pick}}" style="clip-path: path('{{s.clip}}')">
+<span class="lab" style="left: {{s.x}}px; top: {{s.y}}px; gap: 7px">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-{{s.icon}}"></use></svg>
+<span style="font-size: 12.5px; font-weight: 500; line-height: 16px">{{s.label}}</span>
+</span>
+</button>
+</sc-for>
+<sc-for list="{{blanks}}" as="b" hint-placeholder-count="0">
+<button class="add" aria-label="분류 추가" style="clip-path: path('{{b.clip}}')">
+<span class="lab" style="left: {{b.x}}px; top: {{b.y}}px; gap: 6px">
+<svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="15" cy="15" r="13" stroke-dasharray="3.2 3.6"></circle><path d="M15 10v10M10 15h10"></path></svg>
+<span style="font-size: 12px; font-weight: 500; line-height: 15px">분류 추가</span>
+</span>
+</button>
+</sc-for>
+<button class="hub" aria-label="닫기" onClick="{{close}}" style="left: 350px; top: 350px; width: 60px; height: 60px; border-radius: 50%; border: 1px solid #A6F1EC; background: rgba(4, 12, 16, 0.5); color: #CFEDEB; display: flex; align-items: center; justify-content: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"></path></svg>
+</button>
+<sc-if value="{{fanA}}" hint-placeholder-val="{{ true }}">
+<div class="pop" aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 760px; height: 760px; clip-path: path('{{fan.band}}'); background: rgba(3, 8, 10, 0.7); pointer-events: none"></div>
+<svg class="pop" width="760" height="760" viewBox="0 0 760 760" aria-hidden="true" style="position: absolute; left: 0; top: 0; pointer-events: none">
+<path d="{{fan.band}}" fill="none" stroke="#A6F1EC" stroke-opacity="0.28"></path>
+<path d="{{fan.lines}}" fill="none" stroke="#A6F1EC" stroke-opacity="0.16"></path>
+</svg>
+<div class="fan pop">
+<sc-for list="{{fan.subs}}" as="u" hint-placeholder-count="4">
+<sc-if value="{{u.isItem}}" hint-placeholder-val="{{ true }}">
+<button class="sub {{u.cls}}" style="clip-path: path('{{u.clip}}'); animation-delay: {{u.delay}}s">
+<span class="lab" style="left: {{u.x}}px; top: {{u.y}}px; gap: 5px">
+<sc-if value="{{u.hasMono}}" hint-placeholder-val="{{ false }}"><span class="mono">{{u.mono}}</span></sc-if>
+<sc-if value="{{u.hasIcon}}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-{{u.icon}}"></use></svg></sc-if>
+<span style="font-size: 12px; font-weight: 500; line-height: 15px">{{u.label}}</span>
+</span>
+</button>
+</sc-if>
+<sc-if value="{{u.isPlus}}" hint-placeholder-val="{{ false }}">
+<a class="sub plus" href="B-Add.dc.html" aria-label="이 분류에 항목 추가" style="clip-path: path('{{u.clip}}'); animation-delay: {{u.delay}}s">
+<span class="lab" style="left: {{u.x}}px; top: {{u.y}}px; gap: 5px">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5" stroke-dasharray="2.8 3"></circle><path d="M12 8v8M8 12h8"></path></svg>
+<span style="font-size: 12px; font-weight: 500; line-height: 15px">추가</span>
+</span>
+</a>
+</sc-if>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{fanB}}" hint-placeholder-val="{{ false }}">
+<div class="pop" aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 760px; height: 760px; clip-path: path('{{fan.band}}'); background: rgba(3, 8, 10, 0.7); pointer-events: none"></div>
+<svg class="pop" width="760" height="760" viewBox="0 0 760 760" aria-hidden="true" style="position: absolute; left: 0; top: 0; pointer-events: none">
+<path d="{{fan.band}}" fill="none" stroke="#A6F1EC" stroke-opacity="0.28"></path>
+<path d="{{fan.lines}}" fill="none" stroke="#A6F1EC" stroke-opacity="0.16"></path>
+</svg>
+<div class="fan pop">
+<sc-for list="{{fan.subs}}" as="u" hint-placeholder-count="4">
+<sc-if value="{{u.isItem}}" hint-placeholder-val="{{ true }}">
+<button class="sub {{u.cls}}" style="clip-path: path('{{u.clip}}'); animation-delay: {{u.delay}}s">
+<span class="lab" style="left: {{u.x}}px; top: {{u.y}}px; gap: 5px">
+<sc-if value="{{u.hasMono}}" hint-placeholder-val="{{ false }}"><span class="mono">{{u.mono}}</span></sc-if>
+<sc-if value="{{u.hasIcon}}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-{{u.icon}}"></use></svg></sc-if>
+<span style="font-size: 12px; font-weight: 500; line-height: 15px">{{u.label}}</span>
+</span>
+</button>
+</sc-if>
+<sc-if value="{{u.isPlus}}" hint-placeholder-val="{{ false }}">
+<a class="sub plus" href="B-Add.dc.html" aria-label="이 분류에 항목 추가" style="clip-path: path('{{u.clip}}'); animation-delay: {{u.delay}}s">
+<span class="lab" style="left: {{u.x}}px; top: {{u.y}}px; gap: 5px">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5" stroke-dasharray="2.8 3"></circle><path d="M12 8v8M8 12h8"></path></svg>
+<span style="font-size: 12px; font-weight: 500; line-height: 15px">추가</span>
+</span>
+</a>
+</sc-if>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"categories":{"editor":"range","default":4,"min":1,"max":4,"step":1},"apps":{"editor":"range","default":3,"min":0,"max":10,"step":1},"accent":{"editor":"color","default":"#1E9BFF","options":["#1E9BFF","#3D7BFF","#6E56CF","#D6409F"]},"subSoft":{"editor":"boolean","default":false},"bandFade":{"editor":"boolean","default":false},"cyanArc":{"editor":"boolean","default":true},"ringLines":{"editor":"boolean","default":true},"blur":{"editor":"range","default":1,"min":0,"max":8,"step":1,"unit":"px"},"$preview":{"width":760,"height":760}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { hot: 0, flip: false };
+    // 상위 칸은 분류이고, 하위 칸은 그 분류에 등록한 항목이다. 한 분류에는 한 종류만 담는다.
+    this.cats = [
+      { label: '앱', icon: 'apps', demo: 1, items: [
+        { label: 'codex', mono: 'Co' }, { label: 'claude', mono: 'Cl' }, { label: 'antigravity', mono: 'An' },
+        { label: '메모장', mono: '메' }, { label: '계산기', mono: '계' }, { label: '그림판', mono: '그' }, { label: '탐색기', mono: '탐' },
+        { label: '브라우저', mono: '브' }, { label: '메신저', mono: '신' }, { label: '음악', mono: '음' },
+      ] },
+      { label: '터미널', icon: 'terminal', items: [
+        { label: '새 창', icon: 'window' }, { label: '여기서 열기', icon: 'folder' }, { label: '빌드 스크립트', icon: 'play' },
+      ] },
+      { label: '폴더·주소', icon: 'folder', items: [
+        { label: '다운로드', icon: 'folder' }, { label: '문서', icon: 'note' }, { label: '프로젝트', icon: 'folder' },
+        { label: '메일', icon: 'globe' }, { label: '캘린더', icon: 'globe' },
+      ] },
+      { label: '시스템', icon: 'power', items: [
+        { label: '잠금', icon: 'lock' }, { label: '절전', icon: 'sleep' }, { label: '설정', icon: 'settings' }, { label: '작업 관리자', icon: 'activity' },
+      ] },
+    ];
+  }
+  renderVals() {
+    const C = 380;
+    const f = (v) => String(Math.round(v * 10) / 10);
+    const U = (deg) => { const a = deg * Math.PI / 180; return [Math.sin(a), -Math.cos(a)]; };
+    const T = (deg) => { const a = deg * Math.PI / 180; return [Math.cos(a), Math.sin(a)]; };
+    const XY = (r, deg) => { const [x, y] = U(deg); return [C + r * x, C + r * y]; };
+    const P = (r, deg) => { const [x, y] = XY(r, deg); return f(x) + ' ' + f(y); };
+    // 각진 부채꼴 (상위 칸, 선택 하이라이트)
+    const wedge = (r0, r1, a0, a1) => 'M' + P(r0, a0) + 'L' + P(r1, a0) + 'A' + r1 + ' ' + r1 + ' 0 0 1 ' + P(r1, a1) + 'L' + P(r0, a1) + 'A' + r0 + ' ' + r0 + ' 0 0 0 ' + P(r0, a0) + 'Z';
+    // 모서리가 둥근 부채꼴 (하위 메뉴 띠와 칸)
+    const pad = (r0, r1, a0, a1, h, rho) => {
+      const fil = (a, sgn, R, outer) => {
+        const Rc = outer ? R - rho : R + rho;
+        const d = h + rho;
+        const s = Math.sqrt(Rc * Rc - d * d);
+        const [ux, uy] = U(a);
+        const [tx, ty] = T(a);
+        const k = R / Rc;
+        return [
+          f(C + sgn * h * tx + s * ux) + ' ' + f(C + sgn * h * ty + s * uy),
+          f(C + (sgn * d * tx + s * ux) * k) + ' ' + f(C + (sgn * d * ty + s * uy) * k),
+        ];
+      };
+      const so = fil(a0, 1, r1, true);
+      const eo = fil(a1, -1, r1, true);
+      const si = fil(a0, 1, r0, false);
+      const ei = fil(a1, -1, r0, false);
+      const q = 'A' + rho + ' ' + rho + ' 0 0 1 ';
+      const big = a1 - a0 > 180 ? 1 : 0;
+      return 'M' + si[0] + 'L' + so[0] + q + so[1] + 'A' + r1 + ' ' + r1 + ' 0 ' + big + ' 1 ' + eo[1] + q + eo[0] + 'L' + ei[0] + q + ei[1] + 'A' + r0 + ' ' + r0 + ' 0 ' + big + ' 0 ' + si[1] + q + si[0] + 'Z';
+    };
+
+    const appCount = Math.max(0, Math.min(10, Math.round(this.props.apps ?? 3)));
+    const cats = this.cats.map((c, i) => (i === 0 ? Object.assign({}, c, { items: c.items.slice(0, appCount) }) : c));
+
+    // 상위 링: 분류 개수에 맞춰 균등 분배한다. 최소 4칸이고, 모자라는 칸은 비워 둔다.
+    const count = Math.max(1, Math.min(cats.length, Math.round(this.props.categories ?? 4)));
+    const n = Math.max(4, count);
+    const step = 360 / n;
+    const half = step / 2;
+    const hot = this.state.hot < count ? this.state.hot : -1;
+    if (hot >= 0) {
+      const target = hot * step;
+      this._rot = this._rot === undefined ? target : this._rot + (((target - this._rot) % 360 + 540) % 360 - 180);
+    }
+
+    let dividers = '';
+    for (let i = 0; i < n; i++) dividers += 'M' + P(38, (i + 0.5) * step) + 'L' + P(186, (i + 0.5) * step);
+
+    const secs = cats.slice(0, count).map((c, i) => {
+      const ax = i * step;
+      const [x, y] = XY(116, ax);
+      return {
+        cls: hot === i ? 'on' : '',
+        clip: wedge(38, 186, ax - half, ax + half),
+        x: f(x),
+        y: f(y),
+        icon: c.icon,
+        label: c.label,
+        pick: () => this.setState((s) => (s.hot === i ? null : { hot: i, flip: !s.flip })),
+      };
+    });
+
+    // 빈칸 중 첫 칸에만 "분류 추가"를 둔다.
+    const blanks = [];
+    if (count < n) {
+      const a = count * step;
+      const [x, y] = XY(116, a);
+      blanks.push({ clip: wedge(38, 186, a - half, a + half), x: f(x), y: f(y) });
+    }
+
+    // 하위 링: 항목 수 + 추가 칸 하나. 최소 4칸이고, 많아지면 띠가 넓어지다가 216도부터는 칸이 좁아진다.
+    const cur = hot >= 0 ? cats[hot] : null;
+    const open = !!cur;
+    const fan = { band: '', lines: '', subs: [] };
+    if (open) {
+      const ax = hot * step;
+      const items = cur.items;
+      const m = Math.max(4, items.length + 1);
+      const slot = Math.min(24, 216 / m);
+      const span = m * slot + 4;
+      const rev = ax >= 180;
+      fan.band = pad(196, 278, ax - span / 2, ax + span / 2, 0, 14);
+      for (let j = 1; j < m; j++) {
+        const a = ax + (j - m / 2) * slot;
+        fan.lines += 'M' + P(210, a) + 'L' + P(264, a);
+      }
+      const stagger = Math.min(0.03, 0.15 / m);
+      for (let j = 0; j <= items.length; j++) {
+        const ang = ax + ((rev ? m - 1 - j : j) - (m - 1) / 2) * slot;
+        const [x, y] = XY(237, ang);
+        const it = items[j];
+        fan.subs.push({
+          isItem: !!it,
+          isPlus: !it,
+          cls: it && cur.demo === j ? 'demo' : '',
+          clip: pad(200, 274, ang - slot / 2, ang + slot / 2, 2, 10),
+          x: f(x),
+          y: f(y),
+          delay: String(Math.round((0.05 + j * stagger) * 1000) / 1000),
+          hasMono: !!(it && it.mono),
+          hasIcon: !!(it && it.icon),
+          mono: it ? it.mono || '' : '',
+          icon: it ? it.icon || '' : '',
+          label: it ? it.label : '',
+        });
+      }
+    }
+
+    return {
+      accent: this.props.accent ?? '#1E9BFF',
+      mods: (this.props.subSoft ? 'soft ' : '') + (this.props.bandFade ? 'fade ' : '') + ((this.props.cyanArc ?? true) ? '' : 'noarc ') + ((this.props.ringLines ?? true) ? '' : 'nolines'),
+      blur: (this.props.blur ?? 1) + 'px',
+      rot: this._rot ?? 0,
+      selc: hot < 0 ? 'off' : '',
+      close: () => this.setState({ hot: -1 }),
+      dividers,
+      selWedge: wedge(38, 218, -half, half),
+      selEdge: 'M' + P(38, -half) + 'L' + P(186, -half) + 'A186 186 0 0 1 ' + P(186, half) + 'L' + P(38, half),
+      selArc: 'M' + P(36, -half) + 'A36 36 0 0 1 ' + P(36, half),
+      secs,
+      blanks,
+      fan,
+      fanA: open && !this.state.flip,
+      fanB: open && this.state.flip,
+    };
+  }
+}
+</script>
+</body>
+</html>

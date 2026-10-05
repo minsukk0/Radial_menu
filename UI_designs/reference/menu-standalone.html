@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>래디얼 메뉴 · 단독 실행 참고 구현</title>
+<!--
+  시안 B의 메뉴를 캔버스 없이 브라우저에서 바로 열어 볼 수 있게 옮긴 참고 구현이다.
+  모양은 radial-layout.js가 계산하고, 색과 치수와 모션은 ../tokens/tokens.css의 변수를 쓴다.
+  실제 앱에서는 아래 <div class="desk"> 배경을 빼고 투명 창 위에 .rm 만 올린다.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+body{margin:0;background:#8D9BA8;font-family:var(--rm-font-sans);color:var(--rm-color-text-primary)}
+.desk{position:relative;width:760px;height:760px;margin:0 auto;overflow:hidden}
+.rm{position:absolute;left:0;top:0;width:760px;height:760px;--rm-cx:380px;--rm-cy:380px}
+.rm button,.rm a{position:absolute;left:0;top:0;width:760px;height:760px;margin:0;padding:0;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer;text-decoration:none;outline:none;display:block}
+.rm .layer{position:absolute;left:0;top:0;width:760px;height:760px;pointer-events:none}
+
+.rm .plate{position:absolute;left:194px;top:194px;width:372px;height:372px;border-radius:50%;background:var(--rm-gradient-plate);box-shadow:var(--rm-shadow-plate);pointer-events:none}
+.rm .aqua{stroke:var(--rm-color-line-aqua);stroke-width:var(--rm-menu-line-width);fill:none}
+
+.rm .sel{transform-origin:380px 380px;transition:transform var(--rm-dur-selection-rotate) var(--rm-ease-move),opacity var(--rm-dur-selection-fade)}
+.rm .sel.off{opacity:0}
+.rm .sel .fill{position:absolute;left:0;top:0;width:760px;height:760px;background:var(--rm-gradient-selection)}
+.rm .sel .arc{stroke:var(--rm-color-highlight-cyan);stroke-width:var(--rm-menu-arc-width);stroke-linecap:round;fill:none;filter:drop-shadow(var(--rm-shadow-arc-glow))}
+
+.rm .lab{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;white-space:nowrap;pointer-events:none;text-shadow:var(--rm-shadow-label-text)}
+.rm .lab svg{filter:drop-shadow(var(--rm-shadow-label-icon))}
+.rm .sec{color:var(--rm-color-text-rest);transition:color var(--rm-dur-label-color)}
+.rm .sec .lab{gap:var(--rm-menu-ring-label-gap);font:var(--rm-font-menu-category);transition:transform var(--rm-dur-label-scale) var(--rm-ease-move)}
+.rm .sec.on{color:var(--rm-color-text-selected)}
+.rm .sec.on .lab{transform:translate(-50%,-50%) scale(var(--rm-menu-selected-label-scale))}
+.rm .add{color:var(--rm-color-text-add-rest);transition:color var(--rm-dur-slot-hover),background-color var(--rm-dur-slot-hover)}
+.rm .add .lab{gap:6px;font:var(--rm-font-menu-item)}
+.rm .add:hover,.rm .add:focus-visible{color:var(--rm-color-line-aqua);background-color:var(--rm-color-surface-add-hover)}
+
+.rm .hub{left:350px;top:350px;width:60px;height:60px;border-radius:50%;border:1px solid var(--rm-color-line-aqua);background:var(--rm-color-surface-hub);color:var(--rm-color-text-hub-icon);display:flex;align-items:center;justify-content:center;transition:color var(--rm-dur-hub-hover),border-color var(--rm-dur-hub-hover)}
+.rm .hub:hover,.rm .hub:focus-visible{color:var(--rm-color-highlight-cyan);border-color:var(--rm-color-highlight-cyan)}
+
+.rm .band{background:var(--rm-color-surface-band)}
+.rm .pop{transform-origin:380px 380px;animation:rm-band-pop var(--rm-dur-band-pop) var(--rm-ease-pop) both}
+.rm .fan{position:absolute;left:0;top:0;width:760px;height:760px;pointer-events:none}
+.rm .sub{pointer-events:auto;color:var(--rm-color-text-rest);transition:color var(--rm-dur-slot-hover);transform-origin:380px 380px;animation:rm-slot-pop var(--rm-dur-slot-pop) var(--rm-ease-pop) both}
+.rm .sub .lab{gap:var(--rm-menu-slot-label-gap);font:var(--rm-font-menu-item)}
+.rm .sub::before{content:"";position:absolute;left:0;top:0;right:0;bottom:0;opacity:0;transition:opacity var(--rm-dur-slot-hover);background:var(--rm-gradient-sub-highlight)}
+.rm .sub:hover,.rm .sub:focus-visible{color:var(--rm-color-text-selected);text-shadow:var(--rm-shadow-sub-selected-text)}
+.rm .sub:hover::before,.rm .sub:focus-visible::before{opacity:1}
+.rm .sub.plus{color:var(--rm-color-text-sub-add-rest)}
+.rm .sub.plus::before{background:var(--rm-color-surface-sub-add-hover)}
+.rm .sub.plus:hover,.rm .sub.plus:focus-visible{color:var(--rm-color-line-aqua);text-shadow:none}
+.rm .mono{width:20px;height:20px;border-radius:6px;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font:var(--rm-font-menu-monogram);letter-spacing:-.02em;text-shadow:none;box-sizing:border-box}
+@keyframes rm-band-pop{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+@keyframes rm-slot-pop{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.rm .pop,.rm .sub{animation:none}}
+
+.panel{max-width:760px;margin:0 auto;padding:12px 16px 24px;display:flex;flex-wrap:wrap;gap:8px 24px;font-size:13px;color:#1b2227}
+.panel label{display:flex;align-items:center;gap:8px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+<defs>
+<symbol id="i-apps" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></symbol>
+<symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="m7 9.5 3 2.5-3 2.5M12.5 15H17"/></symbol>
+<symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7.5a2 2 0 0 1 2-2h3.6l2 2.2h7.4a2 2 0 0 1 2 2v7.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></symbol>
+<symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3v8.5"/><path d="M7.1 6.7a8 8 0 1 0 9.8 0"/></symbol>
+<symbol id="i-window" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 9.5h18"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2.5"/><path d="M8.5 8.5h7M8.5 12h7M8.5 15.5h4"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><ellipse cx="12" cy="12" rx="3.6" ry="8.5"/><path d="M3.5 12h17"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+<symbol id="i-sleep" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h7M17 7h3M4 12h1.5M11 12h9M4 17h9M19 17h1"/><circle cx="14" cy="7" r="2.2"/><circle cx="8" cy="12" r="2.2"/><circle cx="16" cy="17" r="2.2"/></symbol>
+<symbol id="i-activity" viewBox="0 0 24 24"><path d="M3 12h4l2.5-6 4.5 12 2.5-6H21"/></symbol>
+</defs>
+</svg>
+
+<div class="desk">
+<svg width="760" height="760" viewBox="0 0 760 760" aria-hidden="true" style="position:absolute;left:0;top:0">
+<rect x="36" y="64" width="408" height="300" rx="10" fill="#F4F5F7"/><rect x="36" y="64" width="408" height="34" rx="10" fill="#E2E5EA"/>
+<path d="M64 132h250M64 160h320M64 188h280M64 216h330M64 244h210M64 272h300M64 300h260M64 328h180" fill="none" stroke="#C5CAD3" stroke-width="8" stroke-linecap="round"/>
+<rect x="372" y="436" width="352" height="280" rx="10" fill="#20252B"/><rect x="372" y="436" width="352" height="34" rx="10" fill="#2C333B"/>
+<path d="M400 506h230M400 534h280M400 562h190M400 590h260M400 618h220M400 646h270M400 674h150" fill="none" stroke="#3D4650" stroke-width="8" stroke-linecap="round"/>
+</svg>
+<div class="rm" id="menu"></div>
+</div>
+
+<div class="panel">
+<label>분류 수 <input id="cats" type="range" min="1" max="4" value="4"> <output id="catsOut">4</output></label>
+<label>앱 수 <input id="apps" type="range" min="0" max="10" value="3"> <output id="appsOut">3</output></label>
+</div>
+
+<script src="radial-layout.js"></script>
+<script>
+(function () {
+  var NS = 'http://www.w3.org/2000/svg';
+  var ALL = [
+    { label: '앱', icon: 'apps', items: [
+      { label: 'codex', mono: 'Co' }, { label: 'claude', mono: 'Cl' }, { label: 'antigravity', mono: 'An' },
+      { label: '메모장', mono: '메' }, { label: '계산기', mono: '계' }, { label: '그림판', mono: '그' }, { label: '탐색기', mono: '탐' },
+      { label: '브라우저', mono: '브' }, { label: '메신저', mono: '신' }, { label: '음악', mono: '음' } ] },
+    { label: '터미널', icon: 'terminal', items: [
+      { label: '새 창', icon: 'window' }, { label: '여기서 열기', icon: 'folder' }, { label: '빌드 스크립트', icon: 'play' } ] },
+    { label: '폴더·주소', icon: 'folder', items: [
+      { label: '다운로드', icon: 'folder' }, { label: '문서', icon: 'note' }, { label: '프로젝트', icon: 'folder' },
+      { label: '메일', icon: 'globe' }, { label: '캘린더', icon: 'globe' } ] },
+    { label: '시스템', icon: 'power', items: [
+      { label: '잠금', icon: 'lock' }, { label: '절전', icon: 'sleep' }, { label: '설정', icon: 'settings' }, { label: '작업 관리자', icon: 'activity' } ] }
+  ];
+  var state = { hot: 0, rotation: undefined, catCount: 4, appCount: 3 };
+  var root = document.getElementById('menu');
+
+  function el(tag, attrs, parent) {
+    var e = document.createElement(tag);
+    for (var k in attrs) { if (k === 'text') e.textContent = attrs[k]; else if (k === 'style') e.style.cssText = attrs[k]; else e.setAttribute(k, attrs[k]); }
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function svg(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function icon(name, size, parent) {
+    var s = svg('svg', { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.5', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'aria-hidden': 'true' }, parent);
+    svg('use', { href: '#i-' + name }, s);
+    return s;
+  }
+  function plus(size, parent) {
+    var s = svg('svg', { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.3', 'stroke-linecap': 'round', 'aria-hidden': 'true' }, parent);
+    svg('circle', { cx: 12, cy: 12, r: 9.5, 'stroke-dasharray': '2.8 3' }, s);
+    svg('path', { d: 'M12 8v8M8 12h8' }, s);
+    return s;
+  }
+  function label(x, y, parent) {
+    return el('span', { class: 'lab', style: 'left:' + x + 'px;top:' + y + 'px' }, parent);
+  }
+  function categories() {
+    return ALL.slice(0, state.catCount).map(function (c, i) {
+      return i === 0 ? Object.assign({}, c, { items: c.items.slice(0, state.appCount) }) : c;
+    });
+  }
+
+  // 한 번만 만드는 뼈대: 원판, 구분선, 선택 하이라이트, 칸 그릇, 닫기 버튼, 하위 그릇
+  el('div', { class: 'plate' }, root);
+  var base = svg('svg', { class: 'layer', width: 760, height: 760, viewBox: '0 0 760 760', 'aria-hidden': 'true' }, root);
+  base.innerHTML = '<defs><radialGradient id="dv" gradientUnits="userSpaceOnUse" cx="380" cy="380" r="186"><stop offset="0.2" stop-color="#A6F1EC" stop-opacity="0"/><stop offset="0.62" stop-color="#A6F1EC" stop-opacity="0.26"/><stop offset="1" stop-color="#A6F1EC" stop-opacity="0.05"/></radialGradient><radialGradient id="edge" gradientUnits="userSpaceOnUse" cx="380" cy="380" r="186"><stop offset="0.25" stop-color="#FFFFFF" stop-opacity="0"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0.42"/></radialGradient></defs>';
+  svg('circle', { class: 'aqua', cx: 380, cy: 380, r: 186, 'stroke-opacity': 0.55 }, base);
+  var dividers = svg('path', { fill: 'none', stroke: 'url(#dv)', 'stroke-width': 0.6 }, base);
+  var sel = el('div', { class: 'layer sel off' }, root);
+  var selFill = el('div', { class: 'fill' }, sel);
+  var selSvg = svg('svg', { width: 760, height: 760, viewBox: '0 0 760 760', 'aria-hidden': 'true', style: 'position:absolute;left:0;top:0' }, sel);
+  var selEdge = svg('path', { fill: 'none', stroke: 'url(#edge)', 'stroke-width': 1 }, selSvg);
+  var selArc = svg('path', { class: 'arc' }, selSvg);
+  var ring = el('div', { class: 'layer', style: 'pointer-events:auto' }, root);
+  var hub = el('button', { class: 'hub', 'aria-label': '닫기' }, root);
+  hub.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg>';
+  hub.addEventListener('click', function () { state.hot = -1; render(); });
+  var subLayer = el('div', { class: 'layer' }, root);
+  var shownSub = null;
+
+  function pick(i) {
+    if (state.hot === i) return;
+    state.hot = i;
+    render();
+  }
+
+  function render() {
+    var cats = categories();
+    if (state.hot >= cats.length) state.hot = -1;
+    var L = RadialLayout.layout(cats, state.hot);
+
+    dividers.setAttribute('d', L.dividers);
+
+    // 선택 하이라이트: 모양은 12시 기준으로 두고 통째로 돌린다.
+    selFill.style.clipPath = "path('" + L.selection.wedge + "')";
+    selEdge.setAttribute('d', L.selection.edge);
+    selArc.setAttribute('d', L.selection.arc);
+    sel.classList.toggle('off', !L.selection.visible);
+    if (L.selection.visible) {
+      state.rotation = RadialLayout.nextRotation(state.rotation, L.selection.axis);
+      sel.style.transform = 'rotate(' + state.rotation + 'deg)';
+    }
+
+    // 상위 칸
+    ring.textContent = '';
+    L.sectors.forEach(function (s) {
+      var b = el('button', { class: 'sec' + (s.selected ? ' on' : ''), style: "clip-path:path('" + s.path + "')" }, ring);
+      var lab = label(s.labelX, s.labelY, b);
+      icon(s.category.icon, 24, lab);
+      el('span', { text: s.category.label }, lab);
+      b.addEventListener('mouseenter', function () { pick(s.index); });
+      b.addEventListener('focus', function () { pick(s.index); });
+      b.addEventListener('click', function () { pick(s.index); });
+    });
+    if (L.addSector) {
+      var a = el('button', { class: 'add', 'aria-label': '분류 추가', style: "clip-path:path('" + L.addSector.path + "')" }, ring);
+      var al = label(L.addSector.labelX, L.addSector.labelY, a);
+      plus(30, al);
+      el('span', { text: '분류 추가' }, al);
+    }
+
+    // 하위 띠: 가리키는 분류가 바뀔 때만 새로 만들어 등장 애니메이션을 다시 돌린다.
+    var key = L.sub ? state.hot + ':' + L.sub.slotCount + ':' + L.sub.slots.length : null;
+    if (key !== shownSub) {
+      shownSub = key;
+      subLayer.textContent = '';
+      if (L.sub) {
+        el('div', { class: 'layer band pop', style: "clip-path:path('" + L.sub.band + "')" }, subLayer);
+        var lines = svg('svg', { class: 'layer pop', width: 760, height: 760, viewBox: '0 0 760 760', 'aria-hidden': 'true' }, subLayer);
+        svg('path', { class: 'aqua', d: L.sub.band, 'stroke-opacity': 0.28 }, lines);
+        svg('path', { class: 'aqua', d: L.sub.dividers, 'stroke-opacity': 0.16 }, lines);
+        var fan = el('div', { class: 'fan' }, subLayer);
+        L.sub.slots.forEach(function (slot) {
+          var isAdd = slot.kind === 'add';
+          var b = el(isAdd ? 'a' : 'button', { class: 'sub' + (isAdd ? ' plus' : ''), style: "clip-path:path('" + slot.path + "');animation-delay:" + slot.delayMs + 'ms' }, fan);
+          var lab = label(slot.labelX, slot.labelY, b);
+          if (isAdd) {
+            b.setAttribute('href', '#add');
+            b.setAttribute('aria-label', '이 분류에 항목 추가');
+            plus(20, lab);
+            el('span', { text: '추가' }, lab);
+          } else {
+            if (slot.item.mono) el('span', { class: 'mono', text: slot.item.mono }, lab); else icon(slot.item.icon, 20, lab);
+            el('span', { text: slot.item.label }, lab);
+          }
+        });
+      }
+    }
+  }
+
+  ['cats', 'apps'].forEach(function (id) {
+    document.getElementById(id).addEventListener('input', function (e) {
+      state[id === 'cats' ? 'catCount' : 'appCount'] = +e.target.value;
+      document.getElementById(id + 'Out').textContent = e.target.value;
+      render();
+    });
+  });
+  render();
+})();
+</script>
+</body>
+</html>

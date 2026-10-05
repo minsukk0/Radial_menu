@@ -1,0 +1,48 @@
+[package]
+name = "src-tauri"
+version = "0.1.0"
+edition = "2021"
+authors.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "RadialMenu"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2.1", features = [] }
+
+[dependencies]
+tauri = { version = "2.1", features = ["tray-icon"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+radial-core = { path = "../crates/radial-core" }
+windows = { version = "0.58", features = [
+    "Win32_Foundation",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_UI_Shell",
+    "Win32_System_Threading",
+    "Win32_Security",
+    "Win32_Security_Authorization",
+    "Win32_System_Com",
+    "Win32_Graphics_Gdi",
+    "Win32_System_Environment",
+    "Win32_UI_HiDpi",
+    "Win32_System_ProcessStatus",
+    "Win32_System_Power",
+    "Win32_System_Registry",
+    "Win32_System_Shutdown",
+    "Win32_System_SystemServices",
+    "Win32_System_LibraryLoader",
+    "Win32_System_Diagnostics_ToolHelp",
+] }
+notify = "6"
+sha2 = "0.10"
+hex = "0.4"
+dirs = "5"
+thiserror = "1"
+arboard = "3"
+crossbeam-channel = "0.5"
+tokio = { version = "1", features = ["sync", "rt", "macros"] }
+chrono = { version = "0.4", features = ["serde"] }

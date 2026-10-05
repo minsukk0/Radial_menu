@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>Radial Menu — 관리자 실행 승인</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../shared/tokens.css">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px;
+      background: var(--rm-color-surface-dialog, rgba(11, 17, 20, 0.98));
+      color: var(--rm-color-text-primary, #EAF6F6);
+      font-family: 'IBM Plex Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+      user-select: none;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .shield-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: color-mix(in srgb, #FFB020 20%, transparent);
+      color: #FFB020;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+    }
+    .title-area h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #FFF;
+    }
+    .title-area p {
+      margin: 4px 0 0;
+      font-size: 12px;
+      color: var(--rm-color-text-secondary, #9FB4B6);
+    }
+    .info-card {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(166, 241, 236, 0.16);
+      background: rgba(255, 255, 255, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 12.5px;
+    }
+    .info-row {
+      display: flex;
+      gap: 10px;
+    }
+    .info-label {
+      width: 70px;
+      flex: none;
+      color: var(--rm-color-text-secondary, #9FB4B6);
+    }
+    .info-value {
+      flex: 1;
+      color: #EAF6F6;
+      word-break: break-all;
+      font-family: 'IBM Plex Mono', Consolas, monospace;
+      font-size: 12px;
+    }
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .btn {
+      height: 36px;
+      padding: 0 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(166, 241, 236, 0.26);
+      background: rgba(255, 255, 255, 0.05);
+      color: #EAF6F6;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .12s;
+    }
+    .btn:hover:not(:disabled) {
+      border-color: rgba(166, 241, 236, 0.55);
+    }
+    .btn.primary {
+      background: var(--rm-accent, #1E9BFF);
+      border-color: transparent;
+      font-weight: 600;
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .countdown-note {
+      font-size: 11px;
+      color: #7F9497;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div class="header">
+      <div class="shield-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      </div>
+      <div class="title-area">
+        <h1>관리자 권한 실행 승인</h1>
+        <p>외부 또는 에이전트에 의해 추가된 항목입니다. 실행을 승인하시겠습니까?</p>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-row">
+        <span class="info-label">항목 이름</span>
+        <span class="info-value" id="val-label">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">실행 경로</span>
+        <span class="info-value" id="val-target">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">해시(SHA)</span>
+        <span class="info-value" id="val-hash" style="color:#7F9497; font-size:11px;">-</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="countdown-note" id="countdown-note">오클릭 방지 대기 중 (0.5s)...</span>
+    <button class="btn" id="btn-cancel">취소</button>
+    <button class="btn" id="btn-once" disabled>이번만 실행</button>
+    <button class="btn primary" id="btn-approve" disabled>승인하고 실행</button>
+  </div>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

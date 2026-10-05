@@ -1,0 +1,82 @@
+{
+  "$schema": "https://radial-menu.local/schema/menu.schema.json",
+  "version": 1,
+  "accent": "#1E9BFF",
+  "categories": [
+    {
+      "id": "apps",
+      "kind": "app",
+      "label": "앱",
+      "items": [
+        {
+          "id": "notepad",
+          "label": "메모장",
+          "path": "C:\\Windows\\System32\\notepad.exe"
+        }
+      ]
+    },
+    {
+      "id": "terminal",
+      "kind": "terminal",
+      "label": "터미널",
+      "items": [
+        {
+          "id": "ps-here",
+          "label": "새 창",
+          "icon": "window",
+          "action": "open",
+          "shell": "powershell",
+          "startDir": "{현재 폴더}"
+        },
+        {
+          "id": "ps-admin",
+          "label": "관리자 PS",
+          "icon": "terminal",
+          "action": "open",
+          "shell": "powershell",
+          "runAsAdmin": true
+        },
+        {
+          "id": "flushdns",
+          "label": "DNS 초기화",
+          "icon": "activity",
+          "action": "run",
+          "mode": "command",
+          "command": "ipconfig /flushdns",
+          "window": "hidden",
+          "runAsAdmin": true,
+          "notifyOnDone": true
+        }
+      ]
+    },
+    {
+      "id": "folders",
+      "kind": "folder",
+      "label": "폴더·주소",
+      "items": [
+        {
+          "id": "downloads",
+          "label": "다운로드",
+          "target": "%USERPROFILE%\\Downloads"
+        }
+      ]
+    },
+    {
+      "id": "system",
+      "kind": "system",
+      "label": "시스템",
+      "items": [
+        {
+          "id": "lock",
+          "label": "잠금",
+          "fn": "lock"
+        },
+        {
+          "id": "taskmgr",
+          "label": "작업 관리자",
+          "fn": "taskmgr"
+        }
+      ]
+    }
+  ]
+}

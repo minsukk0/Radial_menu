@@ -1,0 +1,381 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MenuConfig",
+  "description": "Root configuration for Radial Menu (`menu.json`).",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "version": {
+      "default": 1,
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0.0
+    },
+    "accent": {
+      "default": "#1E9BFF",
+      "type": "string"
+    },
+    "categories": {
+      "default": [],
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Category"
+      }
+    }
+  },
+  "definitions": {
+    "Category": {
+      "description": "A category grouping items in the outer/inner radial ring.",
+      "type": "object",
+      "required": [
+        "kind",
+        "label"
+      ],
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/definitions/CategoryKind"
+        },
+        "label": {
+          "type": "string"
+        },
+        "items": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          }
+        }
+      }
+    },
+    "CategoryKind": {
+      "description": "Category kind indicating what type of items this category holds.",
+      "type": "string",
+      "enum": [
+        "app",
+        "terminal",
+        "folder",
+        "system"
+      ]
+    },
+    "Item": {
+      "description": "Item definition, untagged union representing App, Terminal, Folder, or System.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/AppItem"
+        },
+        {
+          "$ref": "#/definitions/TerminalItem"
+        },
+        {
+          "$ref": "#/definitions/FolderItem"
+        },
+        {
+          "$ref": "#/definitions/SystemItem"
+        }
+      ]
+    },
+    "AppItem": {
+      "description": "Application item specification (`kind: \"app\"`).",
+      "type": "object",
+      "required": [
+        "label",
+        "path"
+      ],
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "args": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "whenRunning": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/WhenRunning"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runAsAdmin": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      }
+    },
+    "WhenRunning": {
+      "description": "Behavior when the application is already running.",
+      "type": "string",
+      "enum": [
+        "focus",
+        "new"
+      ]
+    },
+    "TerminalItem": {
+      "description": "Terminal item specification (`kind: \"terminal\"`).",
+      "type": "object",
+      "required": [
+        "action",
+        "label"
+      ],
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "icon": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "action": {
+          "$ref": "#/definitions/TerminalAction"
+        },
+        "mode": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TerminalMode"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "command": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "file": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "shell": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ShellType"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "workDir": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "startDir": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "window": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TerminalWindow"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runAsAdmin": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "notifyOnDone": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "copyOutput": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "confirmFirst": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "reuseTab": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      }
+    },
+    "TerminalAction": {
+      "description": "Terminal action: open interactive terminal or run script/command.",
+      "type": "string",
+      "enum": [
+        "open",
+        "run"
+      ]
+    },
+    "TerminalMode": {
+      "description": "Terminal run mode: inline command string or script file.",
+      "type": "string",
+      "enum": [
+        "command",
+        "file"
+      ]
+    },
+    "ShellType": {
+      "description": "Supported shell environments.",
+      "type": "string",
+      "enum": [
+        "powershell",
+        "cmd",
+        "wsl",
+        "gitbash"
+      ]
+    },
+    "TerminalWindow": {
+      "description": "Window visibility for terminal command execution.",
+      "type": "string",
+      "enum": [
+        "hidden",
+        "visible",
+        "keep"
+      ]
+    },
+    "FolderItem": {
+      "description": "Folder or URL item specification (`kind: \"folder\"`).",
+      "type": "object",
+      "required": [
+        "label",
+        "target"
+      ],
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "icon": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "target": {
+          "type": "string"
+        },
+        "openIn": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/OpenWith"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selectTarget": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      }
+    },
+    "OpenWith": {
+      "description": "Target application to open folder or URL with.",
+      "type": "string",
+      "enum": [
+        "default",
+        "explorer",
+        "browser",
+        "current"
+      ]
+    },
+    "SystemItem": {
+      "description": "System action item specification (`kind: \"system\"`).",
+      "type": "object",
+      "required": [
+        "fn",
+        "label"
+      ],
+      "properties": {
+        "id": {
+          "default": "",
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "icon": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fn": {
+          "$ref": "#/definitions/SystemFn"
+        }
+      }
+    },
+    "SystemFn": {
+      "description": "Supported system action functions.",
+      "type": "string",
+      "enum": [
+        "lock",
+        "sleep",
+        "screensaver",
+        "displayOff",
+        "volumeMute",
+        "radialSettings",
+        "taskmgr",
+        "brightness",
+        "emptybin"
+      ]
+    }
+  }
+}

@@ -1,0 +1,280 @@
+@import '../shared/tokens.css';
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 680px;
+  height: 680px;
+  overflow: hidden;
+  background: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  font-family: var(--rm-font-sans);
+  color: var(--rm-color-text-primary);
+}
+
+.rm {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 680px;
+  height: 680px;
+  --rm-cx: 340px;
+  --rm-cy: 340px;
+}
+
+.rm button, .rm a {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 680px;
+  height: 680px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  outline: none;
+  display: block;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rm .layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 680px;
+  height: 680px;
+  pointer-events: none;
+}
+
+/* 원판 */
+.rm .plate {
+  position: absolute;
+  left: calc(var(--rm-cx) - 186px);
+  top: calc(var(--rm-cy) - 186px);
+  width: 372px;
+  height: 372px;
+  border-radius: 50%;
+  background: var(--rm-gradient-plate);
+  box-shadow: var(--rm-shadow-plate);
+  pointer-events: none;
+}
+
+.rm .aqua {
+  stroke: var(--rm-color-line-aqua);
+  stroke-width: var(--rm-menu-line-width);
+  fill: none;
+}
+
+/* 선택 하이라이트 */
+.rm .sel {
+  transform-origin: var(--rm-cx) var(--rm-cy);
+  transition: transform var(--rm-dur-selection-rotate) var(--rm-ease-move), opacity var(--rm-dur-selection-fade);
+}
+
+.rm .sel.off {
+  opacity: 0;
+}
+
+.rm .sel .fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 680px;
+  height: 680px;
+  background: var(--rm-gradient-selection);
+}
+
+.rm .sel .arc {
+  stroke: var(--rm-color-highlight-cyan);
+  stroke-width: var(--rm-menu-arc-width);
+  stroke-linecap: round;
+  fill: none;
+  filter: drop-shadow(var(--rm-shadow-arc-glow));
+}
+
+/* 라벨 공통 */
+.rm .lab {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow: var(--rm-shadow-label-text);
+}
+
+.rm .lab svg {
+  filter: drop-shadow(var(--rm-shadow-label-icon));
+}
+
+/* 상위 칸 */
+.rm .sec {
+  color: var(--rm-color-text-rest);
+  transition: color var(--rm-dur-label-color);
+}
+
+.rm .sec .lab {
+  gap: var(--rm-menu-ring-label-gap);
+  font: var(--rm-font-menu-category);
+  transition: transform var(--rm-dur-label-scale) var(--rm-ease-move);
+}
+
+.rm .sec.on {
+  color: var(--rm-color-text-selected);
+}
+
+.rm .sec.on .lab {
+  transform: translate(-50%, -50%) scale(var(--rm-menu-selected-label-scale));
+}
+
+.rm .add {
+  color: var(--rm-color-text-add-rest);
+  transition: color var(--rm-dur-slot-hover), background-color var(--rm-dur-slot-hover);
+}
+
+.rm .add .lab {
+  gap: 6px;
+  font: var(--rm-font-menu-item);
+}
+
+.rm .add:hover, .rm .add:focus-visible, .rm .add.active {
+  color: var(--rm-color-line-aqua);
+  background-color: var(--rm-color-surface-add-hover);
+}
+
+/* 닫기 허브 */
+.rm .hub {
+  left: calc(var(--rm-cx) - 30px);
+  top: calc(var(--rm-cy) - 30px);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px solid var(--rm-color-line-aqua);
+  background: var(--rm-color-surface-hub);
+  color: var(--rm-color-text-hub-icon);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--rm-dur-hub-hover), border-color var(--rm-dur-hub-hover);
+  pointer-events: auto;
+}
+
+.rm .hub:hover, .rm .hub:focus-visible, .rm .hub.active {
+  color: var(--rm-color-highlight-cyan);
+  border-color: var(--rm-color-highlight-cyan);
+}
+
+/* 하위 띠 및 칸 */
+.rm .band {
+  background: var(--rm-color-surface-band);
+}
+
+.rm .pop {
+  transform-origin: var(--rm-cx) var(--rm-cy);
+  animation: rm-band-pop var(--rm-dur-band-pop) var(--rm-ease-pop) both;
+}
+
+.rm .fan {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 680px;
+  height: 680px;
+  pointer-events: none;
+}
+
+.rm .sub {
+  pointer-events: auto;
+  color: var(--rm-color-text-rest);
+  transition: color var(--rm-dur-slot-hover);
+  transform-origin: var(--rm-cx) var(--rm-cy);
+  animation: rm-slot-pop var(--rm-dur-slot-pop) var(--rm-ease-pop) both;
+}
+
+.rm .sub .lab {
+  gap: var(--rm-menu-slot-label-gap);
+  font: var(--rm-font-menu-item);
+}
+
+.rm .sub::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  transition: opacity var(--rm-dur-slot-hover);
+  background: var(--rm-gradient-sub-highlight);
+}
+
+.rm .sub:hover, .rm .sub:focus-visible, .rm .sub.active {
+  color: var(--rm-color-text-selected);
+  text-shadow: var(--rm-shadow-sub-selected-text);
+}
+
+.rm .sub:hover::before, .rm .sub:focus-visible::before, .rm .sub.active::before {
+  opacity: 1;
+}
+
+.rm .sub.plus {
+  color: var(--rm-color-text-sub-add-rest);
+}
+
+.rm .sub.plus::before {
+  background: var(--rm-color-surface-sub-add-hover);
+}
+
+.rm .sub.plus:hover, .rm .sub.plus:focus-visible, .rm .sub.plus.active {
+  color: var(--rm-color-line-aqua);
+  text-shadow: none;
+}
+
+.rm .mono {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1.5px solid currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: var(--rm-font-menu-monogram);
+  letter-spacing: -.02em;
+  text-shadow: none;
+  box-sizing: border-box;
+}
+
+@keyframes rm-band-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes rm-slot-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.93);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rm .pop, .rm .sub, .rm .sel {
+    animation: none !important;
+    transition: none !important;
+  }
+}

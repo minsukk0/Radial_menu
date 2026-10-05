@@ -1,0 +1,13 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/radial-core",
+    "crates/rmctl",
+    "src-tauri",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Radial Menu Contributors"]
+license = "MIT"

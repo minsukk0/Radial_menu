@@ -1,0 +1,163 @@
+/* 휠클릭 래디얼 메뉴 · 디자인 토큰 (UI_designs/tokens/tokens.css 기반) */
+:root {
+  /* 메뉴 기본 중심 좌표 (680x680 창 기준 340px) */
+  --rm-cx: 340px;
+  --rm-cy: 340px;
+
+  /* 색 */
+  --rm-accent: #1E9BFF;  /* 강조색 기본값. 선택 하이라이트, 켜진 토글, 기본 버튼에 쓴다. 사용자가 바꿀 수 있는 유일한 색. */
+  --rm-color-accent-option-2: #3D7BFF;  /* 강조색 선택지 */
+  --rm-color-accent-option-3: #6E56CF;  /* 강조색 선택지 */
+  --rm-color-accent-option-4: #D6409F;  /* 강조색 선택지 */
+  --rm-color-on-accent-dark: #04121C;  /* 강조색 채움 위의 글자. 강조색의 상대 휘도가 0.2 이상일 때. */
+  --rm-color-on-accent-light: #FFFFFF;  /* 강조색 채움 위의 글자. 강조색의 상대 휘도가 0.2 미만일 때. */
+  --rm-color-highlight-cyan: #2CE8FF;  /* 선택된 칸의 중심 쪽 원호, 닫기 버튼 호버, 키보드 포커스 테두리 */
+  --rm-color-highlight-cyan-glow: rgba(44, 232, 255, 0.65);  /* 중심 쪽 원호의 빛 번짐 */
+  --rm-color-line-aqua: #A6F1EC;  /* 모든 가는 선의 바탕색. 아래 불투명도 토큰과 곱해서 쓴다. '추가' 칸 호버 글자색으로도 쓴다. */
+  --rm-color-surface-plate: rgba(3, 8, 10, 0.70);  /* 상위 원판 중심부(반지름의 0~50%) */
+  --rm-color-surface-plate-rim: rgba(3, 8, 10, 0.78);  /* 상위 원판 가장자리(반지름의 100%). 50%에서 100%까지 방사형으로 변한다. */
+  --rm-color-surface-band: rgba(3, 8, 10, 0.70);  /* 하위 메뉴 띠 바탕 */
+  --rm-color-surface-hub: rgba(4, 12, 16, 0.50);  /* 가운데 닫기 버튼 바탕 */
+  --rm-color-surface-add-hover: rgba(166, 241, 236, 0.07);  /* 상위 '분류 추가' 칸 호버 바탕 */
+  --rm-color-surface-sub-add-hover: rgba(166, 241, 236, 0.09);  /* 하위 '추가' 칸 호버 바탕 */
+  --rm-color-surface-dialog: rgba(11, 17, 20, 0.96);  /* 항목 추가 창 바탕 */
+  --rm-color-surface-scrim: rgba(3, 8, 10, 0.42);  /* 항목 추가 창 뒤를 덮는 어두운 막 */
+  --rm-color-surface-field: rgba(255, 255, 255, 0.05);  /* 입력란, 보조 버튼, 아이콘 선택 칸 바탕 */
+  --rm-color-surface-segment-track: rgba(255, 255, 255, 0.06);  /* 선택 묶음(세그먼트) 바탕 */
+  --rm-color-surface-tile: rgba(255, 255, 255, 0.04);  /* 기능 선택 타일 바탕 */
+  --rm-color-surface-code: rgba(3, 8, 10, 0.50);  /* 명령 입력 상자 바탕 */
+  --rm-color-surface-info: rgba(166, 241, 236, 0.05);  /* 분류 안내 상자 바탕 */
+  --rm-color-surface-toggle-off: rgba(255, 255, 255, 0.16);  /* 꺼진 토글 바탕 */
+  --rm-color-surface-variable-chip: rgba(44, 232, 255, 0.06);  /* {현재 폴더} 같은 값 칩 바탕 */
+  --rm-color-text-primary: #EAF6F6;  /* 기본 글자 */
+  --rm-color-text-selected: #FFFFFF;  /* 선택되거나 가리킨 칸의 글자와 아이콘 */
+  --rm-color-text-rest: #C6D8DA;  /* 선택되지 않은 메뉴 칸의 글자와 아이콘, 꺼진 토글 손잡이 */
+  --rm-color-text-secondary: #9FB4B6;  /* 항목 추가 창의 라벨, 안내 문구 */
+  --rm-color-text-muted: #7F9497;  /* 빈 입력란의 자리 글자, '등록됨' 꼬리표 */
+  --rm-color-text-disabled: #6F8386;  /* 이미 등록되어 고를 수 없는 타일 */
+  --rm-color-text-variable: #8FE9F5;  /* 명령 안의 {값} 자리표시 */
+  --rm-color-text-hub-icon: #CFEDEB;  /* 닫기 버튼의 X */
+  --rm-color-text-add-rest: rgba(198, 216, 218, 0.55);  /* 상위 '분류 추가' 칸의 평상시 글자 */
+  --rm-color-text-sub-add-rest: rgba(198, 216, 218, 0.60);  /* 하위 '추가' 칸의 평상시 글자 */
+
+  /* 선 불투명도 (color-line-aqua에 곱한다) */
+  --rm-opacity-line-disc: 0.55;  /* 상위 원판 외곽선 */
+  --rm-opacity-line-band: 0.28;  /* 하위 띠 외곽선 */
+  --rm-opacity-line-band-divider: 0.16;  /* 하위 칸 사이 구분선 */
+  --rm-opacity-line-dialog: 0.3;  /* 항목 추가 창 테두리 */
+  --rm-opacity-line-hairline: 0.14;  /* 창 안의 구획선 */
+  --rm-opacity-line-field: 0.2;  /* 입력란 테두리 */
+  --rm-opacity-line-tile: 0.16;  /* 타일, 안내 상자 테두리 */
+  --rm-opacity-line-button: 0.26;  /* 보조 버튼 테두리 (호버 0.55) */
+
+  /* 그라데이션 (메뉴 중심 기준 방사형) */
+  --rm-gradient-selection: radial-gradient(circle at var(--rm-cx, 50%) var(--rm-cy, 50%), color-mix(in srgb, var(--rm-accent) 22%, transparent) 38px, color-mix(in srgb, var(--rm-accent) 52%, transparent) 120px, color-mix(in srgb, var(--rm-accent) 82%, transparent) 186px, color-mix(in srgb, var(--rm-accent) 0%, transparent) 218px);  /* 상위 선택 하이라이트. 메뉴 중심 기준 방사형, 색은 강조색, 아래는 [반지름 px, 불투명도]. */
+  --rm-gradient-selection-edge: radial-gradient(circle at var(--rm-cx, 50%) var(--rm-cy, 50%), color-mix(in srgb, #FFFFFF 0%, transparent) 46.5px, color-mix(in srgb, #FFFFFF 42%, transparent) 186px);  /* 선택 부채꼴의 양옆과 바깥 호에 긋는 1px 흰 선. [반지름 px, 불투명도]. */
+  --rm-gradient-sector-divider: radial-gradient(circle at var(--rm-cx, 50%) var(--rm-cy, 50%), color-mix(in srgb, var(--rm-color-line-aqua) 0%, transparent) 37.2px, color-mix(in srgb, var(--rm-color-line-aqua) 26%, transparent) 115.3px, color-mix(in srgb, var(--rm-color-line-aqua) 5%, transparent) 186px);  /* 상위 칸 구분선. 색은 color.line.aqua, [반지름 px, 불투명도]. */
+  --rm-gradient-sub-highlight: radial-gradient(circle at var(--rm-cx, 50%) var(--rm-cy, 50%), color-mix(in srgb, var(--rm-accent) 32%, transparent) 200px, color-mix(in srgb, var(--rm-accent) 50%, transparent) 244px, color-mix(in srgb, var(--rm-accent) 68%, transparent) 272px);  /* 하위 칸을 가리켰을 때. 메뉴 중심 기준 방사형, 색은 강조색, [반지름 px, 불투명도]. */
+  --rm-gradient-plate: radial-gradient(circle, var(--rm-color-surface-plate) 0%, var(--rm-color-surface-plate) 50%, var(--rm-color-surface-plate-rim) 100%);  /* 상위 원판 바탕 */
+
+  /* 그림자 */
+  --rm-shadow-plate: 0 14px 44px rgba(3, 8, 10, 0.26);  /* 상위 원판 그림자 */
+  --rm-shadow-dialog: 0 24px 70px rgba(3, 8, 10, 0.50);  /* 항목 추가 창 그림자 */
+  --rm-shadow-label-text: 0 1px 3px rgba(4, 12, 16, 0.60);  /* 메뉴 글자 그림자 */
+  --rm-shadow-label-icon: 0 1px 2px rgba(4, 12, 16, 0.50);  /* 메뉴 아이콘 그림자 */
+  --rm-shadow-sub-selected-text: 0 1px 2px rgba(4, 22, 46, 0.50);  /* 가리킨 하위 칸의 글자 그림자 */
+  --rm-shadow-arc-glow: 0 0 4px rgba(44, 232, 255, 0.65);  /* 중심 쪽 원호의 빛 번짐 */
+
+  /* 글자 */
+  --rm-font-sans: 'IBM Plex Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;  /* 모든 화면 글자. 400, 500, 600 굵기를 쓴다. */
+  --rm-font-mono: 'IBM Plex Mono', Consolas, 'Cascadia Mono', monospace;  /* 경로, 명령, {값} 칩. 400, 500 굵기. */
+  --rm-font-menu-category: 500 12.5px/16px var(--rm-font-sans);  /* 상위 칸 이름 */
+  --rm-font-menu-item: 500 12px/15px var(--rm-font-sans);  /* 하위 칸 이름, '추가' */
+  --rm-font-menu-monogram: 600 9px/9px var(--rm-font-sans);  /* 앱 아이콘 자리의 두 글자 (실제 앱 아이콘이 없을 때만) */
+  --rm-font-dialog-title: 600 16px/24px var(--rm-font-sans);  /* 창 제목 */
+  --rm-font-dialog-heading: 600 13.5px/20px var(--rm-font-sans);  /* 분류 안내 상자 제목 */
+  --rm-font-body: 400 13px/20px var(--rm-font-sans);  /* 입력란 글자 */
+  --rm-font-button: 500 13px/20px var(--rm-font-sans);  /* 버튼 (기본 버튼은 굵기 600) */
+  --rm-font-label: 500 12px/18px var(--rm-font-sans);  /* 입력란 라벨, 타일 글자 */
+  --rm-font-segment: 500 12.5px/18px var(--rm-font-sans);  /* 선택 묶음, 토글 글자 */
+  --rm-font-note: 400 11.5px/18px var(--rm-font-sans);  /* 안내 문구 */
+  --rm-font-code: 400 12.5px/20px var(--rm-font-mono);  /* 경로와 명령 (mono) */
+  --rm-font-chip: 400 11px/18px var(--rm-font-mono);  /* {값} 칩 (mono) */
+  --rm-font-tag: 400 10px/14px var(--rm-font-sans);  /* '등록됨' 꼬리표 */
+
+  /* 메뉴 치수 (각도 값은 단위 없음) */
+  --rm-menu-hub-radius: 30px;  /* 가운데 닫기 버튼 반지름 (테두리 1px) */
+  --rm-menu-arc-radius: 36px;  /* 선택된 칸의 중심 쪽 원호 반지름 */
+  --rm-menu-arc-width: 4px;  /* 원호 굵기, 끝은 둥글게 */
+  --rm-menu-ring-inner: 38px;  /* 상위 칸 안쪽 반지름 */
+  --rm-menu-ring-outer: 186px;  /* 상위 칸 바깥 반지름 (원판 반지름) */
+  --rm-menu-ring-label-radius: 116px;  /* 상위 칸의 아이콘+이름 묶음 중심이 놓이는 반지름 */
+  --rm-menu-ring-icon-size: 24px;  /* 상위 아이콘 크기 (선 굵기 1.5, 24 격자) */
+  --rm-menu-ring-label-gap: 7px;  /* 상위 아이콘과 이름 사이 */
+  --rm-menu-ring-min-sectors: 4;  /* 상위 최소 칸 수. 분류가 모자라면 빈칸. */
+  --rm-menu-selection-spill: 218px;  /* 선택 하이라이트가 원판 밖으로 번지는 끝 반지름 */
+  --rm-menu-selected-label-scale: 1.07;  /* 선택된 상위 칸의 아이콘+이름 확대 배율 */
+  --rm-menu-band-inner: 196px;  /* 하위 띠 안쪽 반지름 (원판과 10px 간격) */
+  --rm-menu-band-outer: 278px;  /* 하위 띠 바깥 반지름 = 메뉴 전체 반지름 */
+  --rm-menu-band-corner: 14px;  /* 하위 띠 모서리 둥글기 */
+  --rm-menu-band-end-padding: 2;  /* 띠 양 끝의 여유 각도(도). 띠 전체 각도 = 칸 수 × 칸 각도 + 4 */
+  --rm-menu-slot-inner: 200px;  /* 하위 칸 안쪽 반지름 */
+  --rm-menu-slot-outer: 274px;  /* 하위 칸 바깥 반지름 */
+  --rm-menu-slot-side-inset: 2px;  /* 하위 칸 옆 변을 칸 경계에서 안으로 들이는 거리(px). 칸 사이 간격 4px. */
+  --rm-menu-slot-corner: 10px;  /* 하위 칸 모서리 둥글기 */
+  --rm-menu-slot-angle: 24;  /* 하위 칸 하나의 기본 각도(도) */
+  --rm-menu-slot-max-span: 216;  /* 하위 칸 각도 합의 상한(도). 넘으면 칸 각도 = 216 / 칸 수 */
+  --rm-menu-slot-min-count: 4;  /* 하위 최소 칸 수 */
+  --rm-menu-slot-label-radius: 237px;  /* 하위 칸의 아이콘+이름 묶음 중심 반지름 */
+  --rm-menu-slot-icon-size: 20px;  /* 하위 아이콘 크기 */
+  --rm-menu-slot-label-gap: 5px;  /* 하위 아이콘과 이름 사이 */
+  --rm-menu-slot-divider-inner: 210px;  /* 하위 칸 구분선 시작 반지름 */
+  --rm-menu-slot-divider-outer: 264px;  /* 하위 칸 구분선 끝 반지름 */
+  --rm-menu-line-width: 0.6px;  /* 아쿠아 선 굵기 */
+  --rm-menu-window-size: 680px;  /* 권장 창 한 변. 메뉴 지름 556 + 그림자 여유. */
+
+  /* 항목 추가 창 치수 */
+  --rm-dialog-width: 840px;
+  --rm-dialog-height: 640px;
+  --rm-dialog-radius: 14px;
+  --rm-dialog-header-height: 56px;
+  --rm-dialog-footer-height: 60px;
+  --rm-dialog-side-width: 248px;  /* 왼쪽 단(자리 미리보기, 이름, 아이콘) */
+  --rm-dialog-side-padding: 20px;  /* 왼쪽 단 좌우 여백 (상하 18) */
+  --rm-dialog-main-padding: 24px;  /* 오른쪽 단 좌우 여백 (상하 18) */
+  --rm-dialog-form-label-width: 76px;  /* 입력란 라벨 열 너비 */
+  --rm-dialog-form-gap: 12px;  /* 입력 줄 사이, 라벨과 입력란 사이 */
+  --rm-dialog-control-height: 34px;  /* 입력란, 버튼 높이 */
+  --rm-dialog-control-radius: 8px;  /* 입력란, 버튼, 아이콘 선택 칸 모서리 */
+  --rm-dialog-segment-height: 28px;  /* 선택 묶음 안 버튼 높이 (안쪽 모서리 6, 바깥 모서리 9, 안쪽 여백 3) */
+  --rm-dialog-tile-height: 66px;  /* 기능 선택 타일 높이 (모서리 10) */
+  --rm-dialog-icon-button-height: 38px;
+  --rm-dialog-toggle-width: 30px;
+  --rm-dialog-toggle-height: 18px;  /* 손잡이 지름 14, 이동 거리 12 */
+  --rm-dialog-chip-radius: 6px;
+  --rm-dialog-focus-ring: 2px;  /* 키보드 포커스 테두리 굵기 (color.highlight.cyan, 바깥으로 2px 띄움) */
+
+  /* 모션 */
+  --rm-ease-move: cubic-bezier(0.3, 0.7, 0.2, 1);  /* 선택 하이라이트 회전, 선택된 이름 확대 */
+  --rm-ease-pop: cubic-bezier(0.2, 0.8, 0.2, 1);  /* 하위 띠와 하위 칸 등장 */
+  --rm-dur-selection-rotate: 220ms;  /* 하이라이트가 다음 칸으로 도는 시간. 항상 가까운 방향. */
+  --rm-dur-selection-fade: 150ms;  /* 닫을 때 하이라이트가 사라지는 시간 */
+  --rm-dur-label-color: 160ms;
+  --rm-dur-label-scale: 200ms;
+  --rm-dur-band-pop: 220ms;  /* 하위 띠: 불투명도 0→1, 배율 0.88→1, 기준점은 메뉴 중심 */
+  --rm-dur-slot-pop: 240ms;  /* 하위 칸: 불투명도 0→1, 배율 0.93→1, 기준점은 메뉴 중심 */
+  --rm-dur-slot-first-delay: 50ms;  /* 첫 하위 칸이 나오기 전 지연 */
+  --rm-dur-slot-stagger: 30ms;  /* 하위 칸 사이 지연. 칸이 많으면 150 / 칸 수로 줄인다. */
+  --rm-dur-slot-hover: 140ms;
+  --rm-dur-hub-hover: 100ms;
+  --rm-dur-control: 120ms;  /* 항목 추가 창의 버튼, 타일 (토글은 140) */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* 모션 줄이기: 회전, 확대, 등장 애니메이션을 모두 끈다 */
+  :root {
+    --rm-dur-selection-rotate: 0ms;
+    --rm-dur-label-scale: 0ms;
+    --rm-dur-band-pop: 0ms;
+    --rm-dur-slot-pop: 0ms;
+    --rm-dur-slot-first-delay: 0ms;
+    --rm-dur-slot-stagger: 0ms;
+  }
+}

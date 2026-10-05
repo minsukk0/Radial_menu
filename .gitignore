@@ -44,3 +44,13 @@ venv.bak/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Node.js
+node_modules/
+dist/
+
+# Rust / Cargo
+target/
+
+# Logs
+*.log

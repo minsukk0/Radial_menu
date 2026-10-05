@@ -1,0 +1,1 @@
+{"default":{"identifier":"default","description":"Default capability for the radial menu app","local":true,"windows":["*"],"permissions":["core:default","core:event:default","core:window:default","core:webview:default"]}}
