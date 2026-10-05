@@ -99,6 +99,7 @@ export function getCategoryDefaultIcon(kind: string): IconName {
     case 'terminal': return 'terminal';
     case 'folder': return 'folder';
     case 'system': return 'power';
+    case 'empty': return 'plus';
     default: return 'apps';
   }
 }

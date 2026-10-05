@@ -383,4 +383,76 @@ mod tests {
         let errs = validate_config(&config).unwrap_err();
         assert!(errs.iter().any(|e| e.path == "/categories/0/items/0/icon"));
     }
+
+    #[test]
+    fn test_category_icon_validation_in_config() {
+        let mut config = MenuConfig::default();
+        let cat = Category::new("apps", CategoryKind::App, "앱").with_icon("apps");
+        config.categories.push(cat);
+
+        assert!(validate_config(&config).is_ok());
+
+        // Invalid category icon
+        config.categories[0].icon = Some("invalid_icon_name".into());
+        let errs = validate_config(&config).unwrap_err();
+        assert!(errs.iter().any(|e| e.path == "/categories/0/icon"));
+    }
+
+    #[test]
+    fn test_category_kind_empty_methods() {
+        use std::str::FromStr;
+        assert_eq!(CategoryKind::from_str("empty").unwrap(), CategoryKind::Empty);
+        assert_eq!(CategoryKind::Empty.as_str(), "empty");
+        assert_eq!(CategoryKind::Empty.default_label(), "빈칸");
+    }
+
+    #[test]
+    fn test_empty_category_validation() {
+        let mut config = MenuConfig::default();
+        // 1, 2, 4 configuration: slot 0 (app), slot 1 (term), slot 2 (empty), slot 3 (system)
+        let mut app_cat = Category::new("apps", CategoryKind::App, "앱");
+        app_cat.items.push(Item::App(AppItem {
+            id: "notepad".into(),
+            label: "메모장".into(),
+            icon: None,
+            path: "notepad.exe".into(),
+            args: None,
+            when_running: None,
+            run_as_admin: None,
+        }));
+        let term_cat = Category::new("term", CategoryKind::Terminal, "터미널");
+        let empty_cat = Category::new("slot-3", CategoryKind::Empty, "빈칸");
+        let sys_cat = Category::new("sys", CategoryKind::System, "시스템");
+
+        config.categories = vec![app_cat, term_cat, empty_cat, sys_cat];
+        assert!(validate_config(&config).is_ok());
+
+        // Empty category with empty label is also allowed
+        config.categories[2].label = "".into();
+        assert!(validate_config(&config).is_ok());
+
+        // Empty category with items is NOT allowed
+        config.categories[2].items.push(Item::App(AppItem {
+            id: "bad".into(),
+            label: "잘못된 항목".into(),
+            icon: None,
+            path: "cmd.exe".into(),
+            args: None,
+            when_running: None,
+            run_as_admin: None,
+        }));
+        let errs = validate_config(&config).unwrap_err();
+        assert!(errs.iter().any(|e| e.path == "/categories/2/items"));
+
+        // Config where ALL categories are Empty is NOT allowed
+        let all_empty_config = MenuConfig {
+            categories: vec![
+                Category::new("empty1", CategoryKind::Empty, "빈칸"),
+                Category::new("empty2", CategoryKind::Empty, "빈칸"),
+            ],
+            ..Default::default()
+        };
+        let errs = validate_config(&all_empty_config).unwrap_err();
+        assert!(errs.iter().any(|e| e.path == "/categories" && e.message.contains("최소 하나 이상의 유효한 분류")));
+    }
 }

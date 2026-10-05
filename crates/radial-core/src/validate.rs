@@ -41,7 +41,7 @@ const ALLOWED_PLACEHOLDERS: &[&str] = &[
 pub const ALLOWED_PRESET_ICONS: &[&str] = &[
     "apps", "terminal", "folder", "power", "window", "play", "note", "paste", "globe",
     "lock", "sleep", "settings", "activity", "timer", "mute", "sun", "screen", "trash",
-    "plus", "close", "check", "gpt", "claude", "chatgpt", "openai", "anthropic",
+    "plus", "add", "close", "check", "gpt", "claude", "chatgpt", "openai", "anthropic",
     "antigravity", "gemini", "agy",
 ];
 
@@ -183,6 +183,17 @@ pub fn validate_config(config: &MenuConfig) -> Result<(), Vec<ValidationError>> 
         ));
     }
 
+    let has_valid_category = config
+        .categories
+        .iter()
+        .any(|c| c.kind != crate::model::CategoryKind::Empty);
+    if !has_valid_category {
+        errors.push(ValidationError::new(
+            "/categories",
+            "최소 하나 이상의 유효한 분류가 필요합니다.",
+        ));
+    }
+
     let mut category_ids = HashSet::new();
     let mut all_item_ids = HashSet::new();
     let mut seen_system_fns = HashSet::new();
@@ -212,12 +223,33 @@ pub fn validate_config(config: &MenuConfig) -> Result<(), Vec<ValidationError>> 
             ));
         }
 
+        // Empty category validation
+        if category.kind == crate::model::CategoryKind::Empty {
+            if !category.items.is_empty() {
+                errors.push(ValidationError::new(
+                    format!("{cat_path}/items"),
+                    "빈칸 분류에는 항목을 담을 수 없습니다.",
+                ));
+            }
+            if let Some(icon) = &category.icon {
+                if !icon.trim().is_empty() {
+                    validate_icon(icon, &format!("{cat_path}/icon"), &mut errors);
+                }
+            }
+            continue;
+        }
+
         // Category Label validation
         if category.label.trim().is_empty() {
             errors.push(ValidationError::new(
                 format!("{cat_path}/label"),
                 "분류 이름(label)은 비어 있을 수 없습니다.",
             ));
+        }
+
+        // Category Icon validation
+        if let Some(icon) = &category.icon {
+            validate_icon(icon, &format!("{cat_path}/icon"), &mut errors);
         }
 
         // Items in category

@@ -50,6 +50,7 @@ impl MenuConfig {
                     id: "apps".to_string(),
                     kind: CategoryKind::App,
                     label: "앱".to_string(),
+                    icon: Some("apps".to_string()),
                     items: vec![
                         Item::App(AppItem {
                             id: "chatgpt".to_string(),
@@ -93,6 +94,7 @@ impl MenuConfig {
                     id: "terminal".to_string(),
                     kind: CategoryKind::Terminal,
                     label: "터미널".to_string(),
+                    icon: Some("terminal".to_string()),
                     items: vec![
                         Item::Terminal(TerminalItem {
                             id: "ps-here".to_string(),
@@ -119,6 +121,7 @@ impl MenuConfig {
                     id: "folders".to_string(),
                     kind: CategoryKind::Folder,
                     label: "폴더·주소".to_string(),
+                    icon: Some("folder".to_string()),
                     items: vec![
                         Item::Folder(FolderItem {
                             id: "downloads".to_string(),
@@ -134,6 +137,7 @@ impl MenuConfig {
                     id: "system".to_string(),
                     kind: CategoryKind::System,
                     label: "시스템".to_string(),
+                    icon: Some("power".to_string()),
                     items: vec![
                         Item::System(SystemItem {
                             id: "lock".to_string(),
@@ -156,6 +160,8 @@ pub enum CategoryKind {
     Terminal,
     Folder,
     System,
+    #[serde(rename = "empty")]
+    Empty,
 }
 
 impl CategoryKind {
@@ -165,6 +171,7 @@ impl CategoryKind {
             CategoryKind::Terminal => "terminal",
             CategoryKind::Folder => "folder",
             CategoryKind::System => "system",
+            CategoryKind::Empty => "empty",
         }
     }
 
@@ -174,6 +181,7 @@ impl CategoryKind {
             CategoryKind::Terminal => "터미널",
             CategoryKind::Folder => "폴더·주소",
             CategoryKind::System => "시스템",
+            CategoryKind::Empty => "빈칸",
         }
     }
 }
@@ -187,8 +195,9 @@ impl std::str::FromStr for CategoryKind {
             "terminal" => Ok(CategoryKind::Terminal),
             "folder" => Ok(CategoryKind::Folder),
             "system" => Ok(CategoryKind::System),
+            "empty" => Ok(CategoryKind::Empty),
             other => Err(format!(
-                "지원되지 않는 분류 종류: '{other}'. 허용값: app, terminal, folder, system"
+                "지원되지 않는 분류 종류: '{other}'. 허용값: app, terminal, folder, system, empty"
             )),
         }
     }
@@ -205,6 +214,9 @@ pub struct Category {
 
     pub label: String,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub icon: Option<String>,
+
     #[serde(default)]
     pub items: Vec<Item>,
 }
@@ -215,8 +227,14 @@ impl Category {
             id: id.into(),
             kind,
             label: label.into(),
+            icon: None,
             items: Vec::new(),
         }
+    }
+
+    pub fn with_icon(mut self, icon: impl Into<String>) -> Self {
+        self.icon = Some(icon.into());
+        self
     }
 }
 
@@ -330,6 +348,7 @@ impl Item {
                     .map_err(|e| format!("시스템 항목 업데이트 실패: {e}"))?;
                 Item::System(sys)
             }
+            CategoryKind::Empty => unreachable!("Item cannot be of kind Empty"),
         };
 
         *self = updated_item;
@@ -622,6 +641,9 @@ pub fn deserialize_item_for_kind(
         CategoryKind::System => {
             let item: SystemItem = serde_json::from_value(value.clone())?;
             Ok(Item::System(item))
+        }
+        CategoryKind::Empty => {
+            Err(serde::de::Error::custom("빈칸 분류에는 항목을 추가할 수 없습니다."))
         }
     }
 }

@@ -47,6 +47,12 @@
         "label": {
           "type": "string"
         },
+        "icon": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "items": {
           "default": [],
           "type": "array",
@@ -63,7 +69,8 @@
         "app",
         "terminal",
         "folder",
-        "system"
+        "system",
+        "empty"
       ]
     },
     "Item": {

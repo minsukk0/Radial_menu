@@ -7,7 +7,7 @@
 // 1. 설정 모델 (menu.json)
 // ==========================================
 
-export type CategoryKind = 'app' | 'terminal' | 'folder' | 'system';
+export type CategoryKind = 'app' | 'terminal' | 'folder' | 'system' | 'empty';
 
 export type SystemFn =
   | 'lock'
