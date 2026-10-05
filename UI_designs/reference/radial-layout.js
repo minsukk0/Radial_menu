@@ -24,6 +24,7 @@
     ringOuter: 186,
     ringLabelRadius: 116,
     ringMinSectors: 4,
+    ringMaxSectors: 8,
     selectionSpill: 218,
     bandInner: 196,
     bandOuter: 278,

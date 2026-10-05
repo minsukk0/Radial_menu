@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>상위 메뉴 설정 화면</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+.ad *{box-sizing:border-box}
+.ad button{font:inherit;cursor:pointer;margin:0}
+.ad button:focus-visible,.ad a:focus-visible{outline:2px solid #2CE8FF;outline-offset:2px}
+.ad .lbl{font-size:12px;line-height:18px;font-weight:500;color:#9FB4B6}
+.ad .note{font-size:11.5px;line-height:18px;color:#9FB4B6}
+.ad .field{height:34px;min-width:0;border-radius:8px;border:1px solid rgba(166,241,236,.2);background:rgba(255,255,255,.05);display:flex;align-items:center;padding:0 10px;font-size:13px;color:#EAF6F6;white-space:nowrap;overflow:hidden}
+.ad input.field{width:100%;font:inherit;font-size:13px;outline:none}
+.ad input.field:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 28%,transparent)}
+.ad .ico{height:38px;padding:0;border-radius:8px;border:1px solid transparent;background:rgba(255,255,255,.05);color:#9FB4B6;display:flex;align-items:center;justify-content:center;transition:color .12s,border-color .12s}
+.ad .ico:hover{color:#EAF6F6}
+.ad .ico.on{color:#FFFFFF;border-color:var(--accent);background:color-mix(in srgb,var(--accent) 26%,transparent)}
+.ad .tile{position:relative;height:66px;padding:0;border-radius:10px;border:1px solid rgba(166,241,236,.16);background:rgba(255,255,255,.04);color:#C6D8DA;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:12px;font-weight:500;transition:color .12s,border-color .12s,background-color .12s}
+.ad .tile:hover{color:#FFFFFF;border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent)}
+.ad .btn{flex:none;height:34px;padding:0 16px;border-radius:8px;border:1px solid rgba(166,241,236,.26);background:rgba(255,255,255,.05);color:#EAF6F6;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:7px;text-decoration:none;white-space:nowrap;transition:border-color .12s,filter .12s}
+.ad .btn:hover{border-color:rgba(166,241,236,.55)}
+.ad .btn:disabled{color:#6F8386;border-color:rgba(166,241,236,.14);cursor:default}
+.ad .btn.primary{border-color:transparent;background:var(--accent);font-weight:600}
+.ad .btn.primary:hover{filter:brightness(1.08)}
+.ad .btn.sm{height:28px;padding:0 12px;font-size:12.5px}
+.ad .btn.danger{border-color:rgba(255,138,138,.5);color:#FF9B9B}
+.ad .btn.danger:hover{border-color:#FF9B9B}
+.ad .x{width:32px;height:32px;border-radius:8px;color:#9FB4B6;display:flex;align-items:center;justify-content:center;transition:color .12s,background-color .12s}
+.ad .x:hover{color:#EAF6F6;background:rgba(255,255,255,.07)}
+.ad .row{flex:none;display:flex;align-items:center;gap:2px;height:44px;padding-right:6px;border-radius:10px;border:1px solid rgba(166,241,236,.16);background:rgba(255,255,255,.04);transition:border-color .12s,background-color .12s}
+.ad .row.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,transparent)}
+.ad .row.warn{gap:8px;padding:0 8px 0 14px;border-color:rgba(255,138,138,.5);background:rgba(255,107,107,.14)}
+.ad .rowmain{flex:1;min-width:0;height:100%;display:flex;align-items:center;gap:10px;padding:0 8px 0 10px;border:0;border-radius:10px;background:transparent;color:#EAF6F6;text-align:left}
+.ad .grip{flex:none;color:#6F8386;cursor:grab}
+.ad .num{flex:none;width:16px;text-align:center;font-size:12px;color:#9FB4B6;font-variant-numeric:tabular-nums}
+.ad .cico{flex:none;width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.06);color:#C6D8DA;display:flex;align-items:center;justify-content:center}
+.ad .row.on .cico{background:color-mix(in srgb,var(--accent) 30%,transparent);color:#FFFFFF}
+.ad .cname{flex:1;min-width:0;font-size:13.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ad .kind{flex:none;padding:1px 8px;border-radius:999px;background:rgba(166,241,236,.1);color:#A6F1EC;font-size:11px;line-height:18px}
+.ad .cnt{flex:none;width:58px;text-align:right;font-size:12px;color:#9FB4B6}
+.ad .ib{flex:none;width:28px;height:28px;padding:0;border:0;border-radius:7px;background:transparent;color:#9FB4B6;display:flex;align-items:center;justify-content:center;transition:color .12s,background-color .12s}
+.ad .ib:hover{color:#EAF6F6;background:rgba(255,255,255,.08)}
+.ad .ib.del:hover{color:#FF9B9B;background:rgba(255,107,107,.14)}
+.ad .ib:disabled{color:#6F8386;opacity:.5;background:transparent;cursor:default}
+.ad .pvi{position:absolute;width:16px;height:16px;color:#C6D8DA;pointer-events:none}
+.ad .pvi.on{color:#FFFFFF}
+.ad .pvi.blank{color:rgba(198,216,218,.55)}
+@media (prefers-reduced-motion:reduce){.ad *{transition:none !important}}
+</style>
+</helmet>
+<div class="ad" style="position: relative; width: 960px; height: 740px; overflow: hidden; background: #8D9BA8; color: #EAF6F6; font-family: 'IBM Plex Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; --accent: {{accent}}">
+<svg width="0" height="0" aria-hidden="true" style="position: absolute">
+<defs>
+<symbol id="a-apps" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"></rect><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"></rect><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"></rect><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"></rect></symbol>
+<symbol id="a-terminal" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2.5"></rect><path d="m7 9.5 3 2.5-3 2.5M12.5 15H17"></path></symbol>
+<symbol id="a-folder" viewBox="0 0 24 24"><path d="M3.5 7.5a2 2 0 0 1 2-2h3.6l2 2.2h7.4a2 2 0 0 1 2 2v7.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"></path></symbol>
+<symbol id="a-power" viewBox="0 0 24 24"><path d="M12 3v8.5"></path><path d="M7.1 6.7a8 8 0 1 0 9.8 0"></path></symbol>
+<symbol id="a-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><ellipse cx="12" cy="12" rx="3.6" ry="8.5"></ellipse><path d="M3.5 12h17"></path></symbol>
+<symbol id="a-window" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"></rect><path d="M3 9.5h18"></path></symbol>
+<symbol id="a-paste" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2.5"></rect><path d="M8.5 8.5h7M8.5 12h7M8.5 15.5h4"></path></symbol>
+<symbol id="a-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"></path></symbol>
+<symbol id="a-trash" viewBox="0 0 24 24"><path d="M5 7h14M10 7V5h4v2M7 7l.8 12.5h8.4L17 7M10 10.5v5.5M14 10.5v5.5"></path></symbol>
+<symbol id="a-up" viewBox="0 0 24 24"><path d="M6.5 14.5 12 9l5.5 5.5"></path></symbol>
+<symbol id="a-down" viewBox="0 0 24 24"><path d="M6.5 9.5 12 15l5.5-5.5"></path></symbol>
+<symbol id="a-plus" viewBox="0 0 24 24"><path d="M12 6v12M6 12h12"></path></symbol>
+<symbol id="a-add" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" stroke-dasharray="2.8 3"></circle><path d="M12 8v8M8 12h8"></path></symbol>
+</defs>
+</svg>
+<svg width="960" height="740" viewBox="0 0 960 740" aria-hidden="true" style="position: absolute; left: 0; top: 0">
+<rect x="40" y="40" width="420" height="300" rx="10" fill="#F4F5F7"></rect>
+<rect x="40" y="40" width="420" height="34" rx="10" fill="#E2E5EA"></rect>
+<rect x="520" y="390" width="400" height="310" rx="10" fill="#20252B"></rect>
+<rect x="520" y="390" width="400" height="34" rx="10" fill="#2C333B"></rect>
+<rect x="0" y="0" width="960" height="740" fill="#03080A" fill-opacity="0.42"></rect>
+</svg>
+<div role="dialog" aria-label="상위 메뉴 설정" style="position: absolute; left: 60px; top: 50px; width: 840px; height: 640px; border-radius: 14px; border: 1px solid rgba(166, 241, 236, 0.3); background: rgba(11, 17, 20, 0.96); box-shadow: 0 24px 70px rgba(3, 8, 10, 0.5); display: flex; flex-direction: column; overflow: hidden">
+<div style="flex: none; height: 56px; padding: 0 14px 0 22px; border-bottom: 1px solid rgba(166, 241, 236, 0.14); display: flex; align-items: center; gap: 10px">
+<h1 style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 600">상위 메뉴 설정</h1>
+<span style="flex: 1"></span>
+<a class="x" href="B-Instrument.dc.html" aria-label="닫기">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"></path></svg>
+</a>
+</div>
+<div style="flex: 1; min-height: 0; display: flex">
+<div style="flex: none; width: 248px; padding: 18px 20px; border-right: 1px solid rgba(166, 241, 236, 0.14); display: flex; flex-direction: column">
+<span class="lbl">메뉴 미리보기</span>
+<div style="position: relative; flex: none; width: 200px; height: 200px; margin: 2px auto 0">
+<svg width="200" height="200" viewBox="0 0 200 200" role="img" aria-label="분류 순서대로 놓인 상위 메뉴 미리보기" style="display: block">
+<defs><radialGradient id="cg" gradientUnits="userSpaceOnUse" cx="100" cy="100" r="92"><stop offset="0.22" stop-opacity="0.22" style="stop-color: var(--accent)"></stop><stop offset="1" stop-opacity="0.82" style="stop-color: var(--accent)"></stop></radialGradient></defs>
+<circle cx="100" cy="100" r="92" fill="#03080A" fill-opacity="0.6" stroke="#A6F1EC" stroke-opacity="0.5" stroke-width="0.8"></circle>
+<path d="{{pv.sel}}" fill="url(#cg)"></path>
+<path d="{{pv.lines}}" fill="none" stroke="#A6F1EC" stroke-opacity="0.2" stroke-width="0.8"></path>
+<path d="{{pv.arc}}" fill="none" stroke="#2CE8FF" stroke-width="2.5" stroke-linecap="round"></path>
+<circle cx="100" cy="100" r="14" fill="#040C10" fill-opacity="0.7" stroke="#A6F1EC" stroke-width="0.8"></circle>
+</svg>
+<sc-for list="{{pv.icons}}" as="p" hint-placeholder-count="4">
+<span class="pvi {{p.cls}}" style="left: {{p.x}}px; top: {{p.y}}px"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: block"><use href="#a-{{p.icon}}"></use></svg></span>
+</sc-for>
+</div>
+<div style="margin-top: 4px; text-align: center; font-size: 12px; line-height: 18px; color: #C6D8DA">{{pv.caption}}</div>
+<span class="lbl" style="margin-top: 14px">이름</span>
+<input class="field" type="text" aria-label="선택한 분류의 이름" value="{{selName}}" onChange="{{setName}}" style="flex: none; margin-top: 6px">
+<span class="lbl" style="margin-top: 14px">아이콘</span>
+<div style="margin-top: 6px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+<button class="ico {{ic0}}" aria-label="격자" onClick="{{icPick0}}"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-apps"></use></svg></button>
+<button class="ico {{ic1}}" aria-label="터미널" onClick="{{icPick1}}"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-terminal"></use></svg></button>
+<button class="ico {{ic2}}" aria-label="폴더" onClick="{{icPick2}}"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-folder"></use></svg></button>
+<button class="ico {{ic3}}" aria-label="전원" onClick="{{icPick3}}"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-power"></use></svg></button>
+<button class="ico {{ic4}}" aria-label="지구본" onClick="{{icPick4}}"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-globe"></use></svg></button>
+<button class="ico {{ic5}}" aria-label="창" onClick="{{icPick5}}"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-window"></use></svg></button>
+<button class="ico {{ic6}}" aria-label="문서" onClick="{{icPick6}}"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-paste"></use></svg></button>
+<button class="ico {{ic7}}" aria-label="재생" onClick="{{icPick7}}"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-play"></use></svg></button>
+</div>
+<div class="note" style="margin-top: 12px">{{selKindNote}}</div>
+</div>
+<div style="flex: 1; min-width: 0; padding: 18px 24px; display: flex; flex-direction: column">
+<div style="flex: none; display: flex; align-items: baseline; gap: 8px">
+<span class="lbl">{{listTitle}}</span>
+<span style="flex: 1"></span>
+<span class="note">위에서부터 12시 방향, 시계 방향으로 놓입니다</span>
+</div>
+<div style="margin-top: 8px; display: flex; flex-direction: column; gap: 4px">
+<sc-for list="{{rows}}" as="c" hint-placeholder-count="4">
+<sc-if value="{{c.isRow}}" hint-placeholder-val="{{ true }}">
+<div class="row {{c.cls}}">
+<button class="rowmain" aria-label="{{c.pickLabel}}" onClick="{{c.pick}}">
+<svg class="grip" width="10" height="16" viewBox="0 0 10 16" fill="currentColor" aria-hidden="true"><circle cx="2.5" cy="3" r="1.3"></circle><circle cx="7.5" cy="3" r="1.3"></circle><circle cx="2.5" cy="8" r="1.3"></circle><circle cx="7.5" cy="8" r="1.3"></circle><circle cx="2.5" cy="13" r="1.3"></circle><circle cx="7.5" cy="13" r="1.3"></circle></svg>
+<span class="num">{{c.num}}</span>
+<span class="cico"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-{{c.icon}}"></use></svg></span>
+<span class="cname">{{c.name}}</span>
+<span class="kind">{{c.kindLabel}}</span>
+<span class="cnt">{{c.countText}}</span>
+</button>
+<button class="ib" aria-label="{{c.upLabel}}" disabled="{{c.first}}" onClick="{{c.up}}"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-up"></use></svg></button>
+<button class="ib" aria-label="{{c.downLabel}}" disabled="{{c.last}}" onClick="{{c.down}}"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-down"></use></svg></button>
+<button class="ib del" aria-label="{{c.delLabel}}" disabled="{{c.only}}" onClick="{{c.ask}}"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-trash"></use></svg></button>
+</div>
+</sc-if>
+<sc-if value="{{c.isConfirm}}" hint-placeholder-val="{{ false }}">
+<div class="row warn">
+<span style="flex: 1; min-width: 0; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{c.confirmText}}</span>
+<button class="btn sm" onClick="{{c.cancel}}">취소</button>
+<button class="btn sm danger" onClick="{{c.remove}}">지우기</button>
+</div>
+</sc-if>
+</sc-for>
+</div>
+<sc-if value="{{showAddBtn}}" hint-placeholder-val="{{ true }}">
+<div style="flex: none; margin-top: 10px; display: flex; align-items: center; gap: 12px">
+<button class="btn" disabled="{{atMax}}" onClick="{{openAdd}}"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><use href="#a-plus"></use></svg>분류 추가</button>
+<span class="note">{{addNote}}</span>
+</div>
+</sc-if>
+<sc-if value="{{showPicker}}" hint-placeholder-val="{{ false }}">
+<div style="flex: none; margin-top: 10px; padding: 12px; border-radius: 10px; border: 1px solid rgba(166, 241, 236, 0.16); background: rgba(166, 241, 236, 0.05)">
+<div style="display: flex; align-items: center; gap: 8px">
+<span class="lbl" style="color: #EAF6F6">어떤 종류의 분류를 추가할까요?</span>
+<span style="flex: 1"></span>
+<button class="btn sm" onClick="{{closeAdd}}">취소</button>
+</div>
+<div style="margin-top: 10px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+<button class="tile" onClick="{{add0}}"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-apps"></use></svg>앱</button>
+<button class="tile" onClick="{{add1}}"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-terminal"></use></svg>터미널</button>
+<button class="tile" onClick="{{add2}}"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-folder"></use></svg>폴더·주소</button>
+<button class="tile" onClick="{{add3}}"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-power"></use></svg>시스템</button>
+</div>
+<div class="note" style="margin-top: 8px">같은 종류를 여러 번 추가할 수 있습니다. 이름은 추가한 뒤 왼쪽에서 바꿉니다.</div>
+</div>
+</sc-if>
+</div>
+</div>
+<div style="flex: none; height: 60px; padding: 0 22px; border-top: 1px solid rgba(166, 241, 236, 0.14); display: flex; align-items: center; gap: 10px">
+<span style="font-size: 12px; color: #9FB4B6">분류 안의 항목은 메뉴에서 그 분류의 "추가" 칸으로 등록합니다.</span>
+<span style="flex: 1"></span>
+<a class="btn" href="B-Instrument.dc.html">취소</a>
+<a class="btn primary" href="B-Instrument.dc.html" style="color: {{onAccent}}">저장</a>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#1E9BFF","options":["#1E9BFF","#3D7BFF","#6E56CF","#D6409F"]},"$preview":{"width":960,"height":740}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    // kind: 0 앱, 1 터미널, 2 폴더·주소, 3 시스템. count는 그 분류에 등록된 항목 수.
+    this.state = {
+      cats: [
+        { id: 1, kind: 0, name: '앱', icon: 'apps', count: 3 },
+        { id: 2, kind: 1, name: '터미널', icon: 'terminal', count: 3 },
+        { id: 3, kind: 2, name: '폴더·주소', icon: 'folder', count: 5 },
+        { id: 4, kind: 3, name: '시스템', icon: 'power', count: 4 },
+      ],
+      sel: 1,
+      adding: false,
+      confirm: null,
+      nextId: 5,
+    };
+  }
+  renderVals() {
+    const st = this.state;
+    const MAX = 8;
+    const kinds = [
+      { label: '앱', icon: 'apps' },
+      { label: '터미널', icon: 'terminal' },
+      { label: '폴더·주소', icon: 'folder' },
+      { label: '시스템', icon: 'power' },
+    ];
+    const iconNames = ['apps', 'terminal', 'folder', 'power', 'globe', 'window', 'paste', 'play'];
+    const accent = this.props.accent ?? '#1E9BFF';
+    // 강조색 밝기에 따라 "저장" 버튼 글자색을 고른다.
+    let onAccent = '#04121C';
+    const hex = /^#[0-9a-f]{6}$/i.test(accent) ? accent.slice(1) : null;
+    if (hex) {
+      const ch = [0, 2, 4].map((i) => {
+        const v = parseInt(hex.slice(i, i + 2), 16) / 255;
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+      });
+      if (0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2] < 0.2) onAccent = '#FFFFFF';
+    }
+
+    const cats = st.cats;
+    const count = cats.length;
+    const selIdx = Math.max(0, cats.findIndex((c) => c.id === st.sel));
+    const sel = cats[selIdx];
+
+    const move = (i, d) => () => this.setState((s) => {
+      const j = i + d;
+      if (j < 0 || j >= s.cats.length) return null;
+      const a = s.cats.slice();
+      const t = a[i]; a[i] = a[j]; a[j] = t;
+      return { cats: a };
+    });
+    const remove = (id) => () => this.setState((s) => {
+      if (s.cats.length <= 1) return null;
+      const a = s.cats.filter((c) => c.id !== id);
+      return { cats: a, confirm: null, sel: s.sel === id ? a[0].id : s.sel };
+    });
+    const add = (k) => () => this.setState((s) => {
+      if (s.cats.length >= MAX) return null;
+      const names = s.cats.map((c) => c.name);
+      let name = kinds[k].label;
+      for (let n = 2; names.includes(name); n++) name = kinds[k].label + ' ' + n;
+      return { cats: s.cats.concat([{ id: s.nextId, kind: k, name, icon: kinds[k].icon, count: 0 }]), sel: s.nextId, nextId: s.nextId + 1, adding: false };
+    });
+    const patchSel = (patch) => this.setState((s) => ({ cats: s.cats.map((c) => (c.id === sel.id ? Object.assign({}, c, patch) : c)) }));
+
+    const rows = cats.map((c, i) => ({
+      num: i + 1,
+      name: c.name,
+      icon: c.icon,
+      kindLabel: kinds[c.kind].label,
+      countText: c.count ? '항목 ' + c.count + '개' : '항목 없음',
+      cls: c.id === sel.id ? 'on' : '',
+      isRow: st.confirm !== c.id,
+      isConfirm: st.confirm === c.id,
+      confirmText: '"' + c.name + '" 분류와 그 안의 항목 ' + c.count + '개를 함께 지울까요?',
+      first: i === 0,
+      last: i === count - 1,
+      only: count <= 1,
+      pickLabel: c.name + ' 분류 선택',
+      upLabel: c.name + ' 위로 옮기기',
+      downLabel: c.name + ' 아래로 옮기기',
+      delLabel: c.name + ' 지우기',
+      pick: () => this.setState({ sel: c.id }),
+      up: move(i, -1),
+      down: move(i, 1),
+      // 항목이 든 분류는 한 번 더 묻고, 빈 분류는 바로 지운다.
+      ask: c.count ? () => this.setState({ confirm: c.id, sel: c.id }) : remove(c.id),
+      cancel: () => this.setState({ confirm: null }),
+      remove: remove(c.id),
+    }));
+
+    // 미리보기: 분류 수만큼 균등 분배, 최소 4칸. 메뉴와 같은 규칙이다.
+    const f = (v) => String(Math.round(v * 10) / 10);
+    const XY = (r, deg) => { const a = deg * Math.PI / 180; return [100 + r * Math.sin(a), 100 - r * Math.cos(a)]; };
+    const P = (r, deg) => { const [x, y] = XY(r, deg); return f(x) + ' ' + f(y); };
+    const n = Math.max(4, count);
+    const step = 360 / n;
+    const half = step / 2;
+    const ax = selIdx * step;
+    let lines = '';
+    for (let i = 0; i < n; i++) lines += 'M' + P(20, (i + 0.5) * step) + 'L' + P(92, (i + 0.5) * step);
+    const icons = cats.map((c, i) => {
+      const [x, y] = XY(58, i * step);
+      return { icon: c.icon, cls: i === selIdx ? 'on' : '', x: f(x - 8), y: f(y - 8) };
+    });
+    if (count < n) {
+      const [x, y] = XY(58, count * step);
+      icons.push({ icon: 'add', cls: 'blank', x: f(x - 8), y: f(y - 8) });
+    }
+    const pv = {
+      sel: 'M' + P(20, ax - half) + 'L' + P(92, ax - half) + 'A92 92 0 0 1 ' + P(92, ax + half) + 'L' + P(20, ax + half) + 'A20 20 0 0 0 ' + P(20, ax - half) + 'Z',
+      arc: 'M' + P(17, ax - half) + 'A17 17 0 0 1 ' + P(17, ax + half),
+      lines,
+      icons,
+      caption: '분류 ' + count + '개 · ' + n + '칸' + (count < n ? ' (빈칸 ' + (n - count) + ')' : ''),
+    };
+
+    const vals = {
+      accent,
+      onAccent,
+      pv,
+      rows,
+      listTitle: '분류 ' + count + '개',
+      selName: sel.name,
+      setName: (e) => patchSel({ name: e.target.value.slice(0, 10) }),
+      selKindNote: '종류는 ' + kinds[sel.kind].label + '입니다. 만든 뒤에는 바꿀 수 없습니다.',
+      showAddBtn: !st.adding || count >= MAX,
+      showPicker: st.adding && count < MAX,
+      atMax: count >= MAX,
+      addNote: count >= MAX ? '분류는 ' + MAX + '개까지 만들 수 있습니다.' : '',
+      openAdd: () => this.setState({ adding: true, confirm: null }),
+      closeAdd: () => this.setState({ adding: false }),
+    };
+    for (let k = 0; k < 4; k++) vals['add' + k] = add(k);
+    iconNames.forEach((name, i) => {
+      vals['ic' + i] = sel.icon === name ? 'on' : '';
+      vals['icPick' + i] = () => patchSel({ icon: name });
+    });
+    return vals;
+  }
+}
+</script>
+</body>
+</html>
