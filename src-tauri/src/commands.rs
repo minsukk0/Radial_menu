@@ -361,3 +361,16 @@ pub fn browse_folder() -> Result<Option<String>, String> {
     .map_err(|_| "Browse folder thread panicked".to_string())?
 }
 
+#[tauri::command]
+pub fn get_autostart_status() -> Result<bool, String> {
+    Ok(crate::autostart::is_autostart_enabled())
+}
+
+#[tauri::command]
+pub fn set_autostart_status(app: AppHandle, enabled: bool) -> Result<bool, String> {
+    crate::autostart::set_autostart(enabled)?;
+    let status = crate::autostart::is_autostart_enabled();
+    let _ = app.emit("autostart:changed", serde_json::json!({ "enabled": status }));
+    Ok(status)
+}
+

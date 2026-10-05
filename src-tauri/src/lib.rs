@@ -1,3 +1,4 @@
+pub mod autostart;
 pub mod commands;
 pub mod config_watch;
 pub mod context;
@@ -6,6 +7,7 @@ pub mod input;
 pub mod launcher;
 pub mod menu_window;
 pub mod security;
+pub mod tray;
 pub mod win32;
 
 use std::sync::{Arc, RwLock};
@@ -90,7 +92,14 @@ pub fn log_msg(msg: &str) {
 
 pub fn run() {
     std::panic::set_hook(Box::new(|info| {
-        log_msg(&format!("PANIC OCCURRED: {:?}", info));
+        let msg = if let Some(s) = info.payload().downcast_ref::<&str>() {
+            (*s).to_string()
+        } else if let Some(s) = info.payload().downcast_ref::<String>() {
+            s.clone()
+        } else {
+            format!("{:?}", info.payload())
+        };
+        log_msg(&format!("PANIC OCCURRED: {} at {:?}", msg, info.location()));
     }));
 
     // Forcibly terminate older/stale RadialMenu instances so hooks and ports are clean
@@ -157,10 +166,17 @@ pub fn run() {
             commands::add_menu_category,
             commands::browse_file,
             commands::browse_folder,
+            commands::get_autostart_status,
+            commands::set_autostart_status,
         ])
         .setup(move |app| {
             log_msg("Tauri setup hook executing...");
             let app_handle = app.handle().clone();
+
+            // 0. Setup system tray
+            if let Err(e) = tray::setup_tray(&app_handle) {
+                log_msg(&format!("System tray setup error: {e}"));
+            }
 
             // 1. Prepare menu window Win32 styles
             if let Some(menu_win) = app_handle.get_webview_window("menu") {
