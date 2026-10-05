@@ -44,6 +44,16 @@
         "alwaysOnTop": true,
         "visible": false,
         "url": "src/dialogs/approve/index.html"
+      },
+      {
+        "label": "category-settings",
+        "title": "상위 메뉴 설정",
+        "width": 840,
+        "height": 640,
+        "resizable": false,
+        "decorations": true,
+        "visible": false,
+        "url": "src/dialogs/category-settings/index.html"
       }
     ],
     "security": {

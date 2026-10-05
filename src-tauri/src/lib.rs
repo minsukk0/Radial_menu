@@ -168,6 +168,7 @@ pub fn run() {
             commands::browse_folder,
             commands::get_autostart_status,
             commands::set_autostart_status,
+            commands::save_categories,
         ])
         .setup(move |app| {
             log_msg("Tauri setup hook executing...");

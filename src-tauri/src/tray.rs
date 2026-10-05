@@ -14,6 +14,7 @@ pub fn setup_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     let autostart_enabled = crate::autostart::is_autostart_enabled();
 
     let manage_item = MenuItemBuilder::with_id("manage", "항목 관리...").build(app)?;
+    let manage_categories_item = MenuItemBuilder::with_id("manage_categories", "상위 메뉴(분류) 설정...").build(app)?;
     let open_config_item = MenuItemBuilder::with_id("open_config", "설정 파일(menu.json) 열기").build(app)?;
     let separator1 = PredefinedMenuItem::separator(app)?;
     let autostart_item = CheckMenuItemBuilder::with_id("autostart", "Windows 시작 시 자동 실행")
@@ -24,6 +25,7 @@ pub fn setup_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
 
     let menu = MenuBuilder::new(app)
         .item(&manage_item)
+        .item(&manage_categories_item)
         .item(&open_config_item)
         .item(&separator1)
         .item(&autostart_item)
@@ -62,6 +64,13 @@ pub fn setup_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
             match id {
                 "manage" => {
                     if let Some(win) = app_handle.get_webview_window("add-item") {
+                        let _ = win.center();
+                        let _ = win.show();
+                        let _ = win.set_focus();
+                    }
+                }
+                "manage_categories" => {
+                    if let Some(win) = app_handle.get_webview_window("category-settings") {
                         let _ = win.center();
                         let _ = win.show();
                         let _ = win.set_focus();

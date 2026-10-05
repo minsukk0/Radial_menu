@@ -97,11 +97,8 @@ pub fn commit_menu_action(
         "add_category" => {
             let _ = open_dialog(
                 app,
-                "add-item".to_string(),
-                Some(DialogOptions {
-                    category_id: None,
-                    item_id: None,
-                }),
+                "category-settings".to_string(),
+                None,
             );
         }
 
@@ -372,5 +369,44 @@ pub fn set_autostart_status(app: AppHandle, enabled: bool) -> Result<bool, Strin
     let status = crate::autostart::is_autostart_enabled();
     let _ = app.emit("autostart:changed", serde_json::json!({ "enabled": status }));
     Ok(status)
+}
+
+#[tauri::command]
+pub fn save_categories(
+    app: AppHandle,
+    config_state: State<'_, Arc<RwLock<MenuConfig>>>,
+    categories: Vec<radial_core::Category>,
+) -> Result<(), String> {
+    let config_path = if let Ok(custom) = std::env::var("RADIAL_MENU_CONFIG") {
+        std::path::PathBuf::from(custom)
+    } else {
+        radial_core::get_default_config_path()
+    };
+
+    let mut lock = config_state
+        .write()
+        .map_err(|e| format!("설정 락 획득 실패: {e}"))?;
+
+    let mut temp_config = lock.clone();
+    temp_config.categories = categories.clone();
+
+    radial_core::validate_config(&temp_config).map_err(|errs| {
+        let err_msgs: Vec<String> = errs
+            .into_iter()
+            .map(|e| format!("{}: {}", e.path, e.message))
+            .collect();
+        format!("설정 유효성 검사 실패:\n{}", err_msgs.join("\n"))
+    })?;
+
+    lock.categories = categories;
+
+    radial_core::write_config_atomic(&config_path, &mut lock, None)
+        .map_err(|e| format!("설정 저장 실패: {e}"))?;
+
+    let updated_config = lock.clone();
+    let _ = app.emit("menu:config_changed", serde_json::json!({ "config": updated_config }));
+
+    crate::log_msg("save_categories: Successfully updated and saved categories");
+    Ok(())
 }
 
