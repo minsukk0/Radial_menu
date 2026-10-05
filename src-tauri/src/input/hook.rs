@@ -146,6 +146,7 @@ pub fn dispatch_commit_response(target: Option<String>) {
     if let Ok(mut state_guard) = HOOK_STATE.lock() {
         if let Some(state) = state_guard.as_mut() {
             let (_, actions) = state.sm.handle_event(GestureEvent::CommitResponse(target));
+            state.is_ctrl_down = is_ctrl_physically_down();
             IS_MENU_OPEN_ATOMIC.store(state.sm.is_open(), Ordering::Relaxed);
             for act in actions {
                 let _ = state.sender.send(act);
@@ -159,6 +160,7 @@ pub fn dispatch_timeout() {
     if let Ok(mut state_guard) = HOOK_STATE.lock() {
         if let Some(state) = state_guard.as_mut() {
             let (_, actions) = state.sm.handle_event(GestureEvent::Timeout);
+            state.is_ctrl_down = is_ctrl_physically_down();
             IS_MENU_OPEN_ATOMIC.store(state.sm.is_open(), Ordering::Relaxed);
             for act in actions {
                 let _ = state.sender.send(act);
@@ -172,6 +174,7 @@ pub fn dispatch_close() {
     if let Ok(mut state_guard) = HOOK_STATE.lock() {
         if let Some(state) = state_guard.as_mut() {
             let (_, actions) = state.sm.handle_event(GestureEvent::EscapeDown);
+            state.is_ctrl_down = is_ctrl_physically_down();
             IS_MENU_OPEN_ATOMIC.store(state.sm.is_open(), Ordering::Relaxed);
             for act in actions {
                 let _ = state.sender.send(act);
@@ -219,7 +222,7 @@ unsafe extern "system" fn mouse_hook_proc(code: i32, wparam: WPARAM, lparam: LPA
             if let Some(state) = state_guard.as_mut() {
                 let event = match msg {
                     WM_MBUTTONDOWN => {
-                        let is_ctrl = state.is_ctrl_down || is_ctrl_physically_down();
+                        let is_ctrl = is_ctrl_physically_down();
                         state.is_ctrl_down = is_ctrl;
 
                         Some(GestureEvent::MButtonDown {
