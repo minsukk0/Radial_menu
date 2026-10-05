@@ -54,3 +54,7 @@ target/
 
 # Logs
 *.log
+
+# AI Agent instructions & skills
+.agents/
+AGENTS.md
