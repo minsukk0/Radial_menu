@@ -193,16 +193,11 @@ impl GestureStateMachine {
             }
 
             GestureEvent::CommitResponse(target) => {
-                if self.state == GestureState::Committing {
+                if self.state == GestureState::Committing || self.state == GestureState::Open {
+                    self.state = GestureState::Idle;
                     match target {
-                        Some(t) => {
-                            self.state = GestureState::Idle;
-                            (false, vec![GestureAction::ExecuteTarget(t), GestureAction::CloseMenu])
-                        }
-                        None => {
-                            self.state = GestureState::Idle;
-                            (false, vec![GestureAction::CloseMenu])
-                        }
+                        Some(t) => (false, vec![GestureAction::ExecuteTarget(t), GestureAction::CloseMenu]),
+                        None => (false, vec![GestureAction::CloseMenu]),
                     }
                 } else {
                     (false, vec![])

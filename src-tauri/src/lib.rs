@@ -172,26 +172,26 @@ pub fn run() {
                 log_msg("ERROR: 'menu' window NOT FOUND in app_handle!");
             }
 
-            // 2. Start config watcher
-            if let Err(e) = config_watch::start_config_watcher(
+            // 2. Start config watcher and keep it alive in app state
+            let config_path_for_open = config_path.clone();
+            match config_watch::start_config_watcher(
                 app_handle.clone(),
                 config_state.clone(),
                 config_path,
             ) {
-                eprintln!("Config watcher error: {e}");
+                Ok(watcher) => {
+                    app_handle.manage(watcher);
+                }
+                Err(e) => {
+                    log_msg(&format!("Config watcher error: {e}"));
+                }
             }
 
             // 3. Listen to frontend commit response
-            let app_for_commit = app_handle.clone();
             app_handle.listen("menu:commit_result", move |event| {
                 if let Ok(payload) = serde_json::from_str::<serde_json::Value>(event.payload()) {
                     let target = payload.get("target").cloned();
                     dispatch_commit_response(target.as_ref().map(|t| t.to_string()));
-
-                    if let Some(t) = target {
-                        let state = app_for_commit.state::<Arc<RwLock<MenuConfig>>>();
-                        let _ = commands::commit_menu_action(app_for_commit.clone(), state, t);
-                    }
                 }
             });
 
@@ -208,6 +208,7 @@ pub fn run() {
                 Ok(receiver) => {
                     let hook_app = app_handle.clone();
                     let hook_state = config_state.clone();
+                    let cfg_path = config_path_for_open.clone();
 
                     use std::sync::Mutex;
                     static MENU_ORIGIN: Mutex<(i32, i32, f64)> = Mutex::new((0, 0, 1.0));
@@ -224,6 +225,14 @@ pub fn run() {
                                     GestureAction::OpenMenu { x, y } => {
                                         log_msg(&format!("Processor: GestureAction::OpenMenu at ({}, {})", x, y));
                                         if let Some(menu_win) = app.get_webview_window("menu") {
+                                            // Always sync with the latest disk configuration so external edits / rmctl take effect immediately
+                                            if let Ok((fresh_cfg, _)) = radial_core::read_config(&cfg_path) {
+                                                if radial_core::validate_config(&fresh_cfg).is_ok() {
+                                                    let mut lock = state.write().unwrap();
+                                                    *lock = fresh_cfg;
+                                                }
+                                            }
+
                                             match show_menu_at_cursor(&menu_win, x, y) {
                                                 Ok((cx, cy)) => {
                                                     let scale = crate::win32::window::get_cursor_monitor_dpi_scale(x, y);
