@@ -13,7 +13,7 @@ pub use store::{
     acquire_lock, get_backup_path, get_default_config_path, get_lock_path, read_config,
     update_config, write_config_atomic, LockGuard, StoreError,
 };
-pub use validate::{validate_config, ValidationError};
+pub use validate::{validate_config, validate_icon, ValidationError, ALLOWED_ICONS, ALLOWED_PRESET_ICONS};
 
 /// Generates the JSON Schema for the `MenuConfig` struct.
 pub fn generate_schema() -> schemars::schema::RootSchema {
@@ -51,6 +51,7 @@ mod tests {
         cat.items.push(Item::App(AppItem {
             id: "notepad".into(),
             label: "메모장".into(),
+            icon: None,
             path: "C:\\Windows\\System32\\notepad.exe".into(),
             args: None,
             when_running: Some(WhenRunning::Focus),
@@ -73,6 +74,7 @@ mod tests {
         let mut item = Item::App(AppItem {
             id: "calc".into(),
             label: "계산기".into(),
+            icon: None,
             path: "calc.exe".into(),
             args: None,
             when_running: None,
@@ -173,6 +175,7 @@ mod tests {
         cat.items.push(Item::App(AppItem {
             id: "test-app".into(),
             label: "테스트".into(),
+            icon: None,
             path: "cmd.exe".into(),
             args: Some("--file {잘못된 자리표시자}".into()),
             when_running: None,
@@ -216,6 +219,7 @@ mod tests {
         cat.items.push(Item::App(AppItem {
             id: "notepad".into(),
             label: "메모장".into(),
+            icon: None,
             path: "notepad.exe".into(),
             args: None,
             when_running: None,
@@ -313,5 +317,70 @@ mod tests {
         assert!(hash1.starts_with("sha256:"));
         assert_eq!(hash1, hash2, "Label and icon changes must NOT affect hash");
         assert_ne!(hash1, hash3, "Command change MUST affect hash");
+    }
+
+    #[test]
+    fn test_validate_icon() {
+        let mut errs = Vec::new();
+
+        // Preset icons
+        for preset in ALLOWED_PRESET_ICONS {
+            validate_icon(preset, "/test/icon", &mut errs);
+        }
+        assert!(errs.is_empty(), "All preset icons must be valid");
+
+        // Data URLs
+        validate_icon(
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+            "/test/icon",
+            &mut errs,
+        );
+        validate_icon("data:image/svg+xml;utf8,<svg></svg>", "/test/icon", &mut errs);
+        assert!(errs.is_empty(), "Data image URLs must be valid");
+
+        // HTTP(S) URLs
+        validate_icon("http://example.com/icon.png", "/test/icon", &mut errs);
+        validate_icon("https://example.com/icon.svg", "/test/icon", &mut errs);
+        assert!(errs.is_empty(), "HTTP(S) URLs must be valid");
+
+        // File extensions (case-insensitive)
+        validate_icon("C:\\app\\icon.png", "/test/icon", &mut errs);
+        validate_icon("assets/icon.JPG", "/test/icon", &mut errs);
+        validate_icon("assets/icon.jpeg", "/test/icon", &mut errs);
+        validate_icon("assets/icon.SVG", "/test/icon", &mut errs);
+        validate_icon("assets/icon.ico", "/test/icon", &mut errs);
+        validate_icon("assets/icon.webp", "/test/icon", &mut errs);
+        assert!(errs.is_empty(), "Image file paths must be valid");
+
+        // Invalid icons
+        validate_icon("invalid-preset-name", "/test/icon", &mut errs);
+        validate_icon("icon.exe", "/test/icon", &mut errs);
+        validate_icon("   ", "/test/icon", &mut errs);
+        assert_eq!(errs.len(), 3, "Invalid icons must fail");
+    }
+
+    #[test]
+    fn test_app_icon_validation_in_config() {
+        let mut config = MenuConfig::default();
+        let mut cat = Category::new("apps", CategoryKind::App, "앱");
+        cat.items.push(Item::App(AppItem {
+            id: "custom-app".into(),
+            label: "커스텀 앱".into(),
+            icon: Some("data:image/png;base64,xyz".into()),
+            path: "app.exe".into(),
+            args: None,
+            when_running: None,
+            run_as_admin: None,
+        }));
+        config.categories.push(cat);
+
+        assert!(validate_config(&config).is_ok());
+
+        // Now with invalid icon
+        if let Item::App(app) = &mut config.categories[0].items[0] {
+            app.icon = Some("not_a_valid_icon".into());
+        }
+        let errs = validate_config(&config).unwrap_err();
+        assert!(errs.iter().any(|e| e.path == "/categories/0/items/0/icon"));
     }
 }

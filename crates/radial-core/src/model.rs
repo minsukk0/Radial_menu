@@ -52,8 +52,36 @@ impl MenuConfig {
                     label: "앱".to_string(),
                     items: vec![
                         Item::App(AppItem {
+                            id: "chatgpt".to_string(),
+                            label: "ChatGPT".to_string(),
+                            icon: Some("gpt".to_string()),
+                            path: "https://chatgpt.com".to_string(),
+                            args: None,
+                            when_running: Some(WhenRunning::New),
+                            run_as_admin: Some(false),
+                        }),
+                        Item::App(AppItem {
+                            id: "claude".to_string(),
+                            label: "Claude".to_string(),
+                            icon: Some("claude".to_string()),
+                            path: "https://claude.ai".to_string(),
+                            args: None,
+                            when_running: Some(WhenRunning::New),
+                            run_as_admin: Some(false),
+                        }),
+                        Item::App(AppItem {
+                            id: "antigravity".to_string(),
+                            label: "Antigravity".to_string(),
+                            icon: Some("antigravity".to_string()),
+                            path: r"C:\Users\minsu\AppData\Local\Programs\antigravity\Antigravity.exe".to_string(),
+                            args: None,
+                            when_running: Some(WhenRunning::Focus),
+                            run_as_admin: Some(false),
+                        }),
+                        Item::App(AppItem {
                             id: "notepad".to_string(),
                             label: "메모장".to_string(),
+                            icon: None,
                             path: r"C:\Windows\System32\notepad.exe".to_string(),
                             args: None,
                             when_running: Some(WhenRunning::Focus),
@@ -257,6 +285,15 @@ impl Item {
         }
     }
 
+    pub fn icon(&self) -> Option<&str> {
+        match self {
+            Item::App(i) => i.icon.as_deref(),
+            Item::Terminal(i) => i.icon.as_deref(),
+            Item::Folder(i) => i.icon.as_deref(),
+            Item::System(i) => i.icon.as_deref(),
+        }
+    }
+
     /// Update this item by shallow-merging fields from a JSON patch object.
     pub fn update_from_json(&mut self, patch: &serde_json::Value) -> Result<(), String> {
         let patch_obj = patch
@@ -323,6 +360,9 @@ pub struct AppItem {
 
     pub label: String,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub icon: Option<String>,
+
     pub path: String,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -333,6 +373,12 @@ pub struct AppItem {
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub run_as_admin: Option<bool>,
+}
+
+impl AppItem {
+    pub fn icon(&self) -> Option<&str> {
+        self.icon.as_deref()
+    }
 }
 
 /// Terminal action: open interactive terminal or run script/command.
@@ -443,6 +489,10 @@ pub struct TerminalItem {
 }
 
 impl TerminalItem {
+    pub fn icon(&self) -> Option<&str> {
+        self.icon.as_deref()
+    }
+
     pub fn working_directory(&self) -> Option<&str> {
         self.work_dir
             .as_deref()
@@ -488,6 +538,10 @@ pub struct FolderItem {
 }
 
 impl FolderItem {
+    pub fn icon(&self) -> Option<&str> {
+        self.icon.as_deref()
+    }
+
     pub fn open_target(&self) -> OpenWith {
         self.open_in.unwrap_or(OpenWith::Default)
     }
@@ -539,6 +593,12 @@ pub struct SystemItem {
 
     #[serde(rename = "fn")]
     pub fn_name: SystemFn,
+}
+
+impl SystemItem {
+    pub fn icon(&self) -> Option<&str> {
+        self.icon.as_deref()
+    }
 }
 
 /// Deserialize item JSON specifically for a known category kind.

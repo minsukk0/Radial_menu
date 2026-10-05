@@ -9,6 +9,24 @@
       "label": "앱",
       "items": [
         {
+          "id": "chatgpt",
+          "label": "ChatGPT",
+          "icon": "gpt",
+          "path": "https://chatgpt.com"
+        },
+        {
+          "id": "claude",
+          "label": "Claude",
+          "icon": "claude",
+          "path": "https://claude.ai"
+        },
+        {
+          "id": "antigravity",
+          "label": "Antigravity",
+          "icon": "antigravity",
+          "path": "%LOCALAPPDATA%\\Programs\\antigravity\\Antigravity.exe"
+        },
+        {
           "id": "notepad",
           "label": "메모장",
           "path": "C:\\Windows\\System32\\notepad.exe"

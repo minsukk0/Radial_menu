@@ -91,7 +91,7 @@ describe('MenuController & Interaction logic', () => {
     const res = committedResult!;
     expect(res.type).toBe('item');
     if (res.type === 'item') {
-      expect(res.item.label).toBe('codex');
+      expect(res.item.label).toBe('ChatGPT');
     }
   });
 
@@ -128,5 +128,53 @@ describe('MenuController & Interaction logic', () => {
     expect(controller.state.isOpen).toBe(true);
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     expect(controller.state.isOpen).toBe(false);
+  });
+
+  it('renders custom image icon and preset icon prioritizing slot.item.icon over mono', () => {
+    const configWithIcons: MenuConfig = {
+      version: 1,
+      accent: '#1E9BFF',
+      categories: [
+        {
+          id: 'custom_apps',
+          kind: 'app',
+          label: '앱',
+          items: [
+            {
+              label: 'Image App',
+              path: 'app.exe',
+              mono: 'IA',
+              icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+            },
+            {
+              label: 'Preset App',
+              path: 'preset.exe',
+              mono: 'PA',
+              icon: 'terminal',
+            },
+          ],
+        },
+      ],
+    };
+
+    const ctrl = new MenuController(container, configWithIcons);
+    ctrl.selectCategory(0);
+
+    const subSlots = container.querySelectorAll('.sub');
+    expect(subSlots.length).toBeGreaterThan(0);
+
+    // Slot 0 has data:image icon -> must render <image> element, not .mono text
+    const slot0 = subSlots[0];
+    const imageEl = slot0.querySelector('image');
+    expect(imageEl).not.toBeNull();
+    expect(imageEl?.getAttribute('href')).toContain('data:image/png');
+    expect(slot0.querySelector('.mono')).toBeNull();
+
+    // Slot 1 has preset 'terminal' icon -> must render <use href="#i-terminal">
+    const slot1 = subSlots[1];
+    const useEl = slot1.querySelector('use');
+    expect(useEl).not.toBeNull();
+    expect(useEl?.getAttribute('href')).toBe('#i-terminal');
+    expect(slot1.querySelector('.mono')).toBeNull();
   });
 });

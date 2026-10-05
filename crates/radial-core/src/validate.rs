@@ -38,9 +38,84 @@ const ALLOWED_PLACEHOLDERS: &[&str] = &[
     "{클립보드}",
 ];
 
-const ALLOWED_ICONS: &[&str] = &[
-    "terminal", "window", "folder", "note", "globe", "activity", "timer", "play",
+pub const ALLOWED_PRESET_ICONS: &[&str] = &[
+    "apps", "terminal", "folder", "power", "window", "play", "note", "paste", "globe",
+    "lock", "sleep", "settings", "activity", "timer", "mute", "sun", "screen", "trash",
+    "plus", "close", "check", "gpt", "claude", "chatgpt", "openai", "anthropic",
+    "antigravity", "gemini", "agy",
 ];
+
+pub const ALLOWED_ICONS: &[&str] = ALLOWED_PRESET_ICONS;
+
+pub const ALLOWED_IMAGE_EXTENSIONS: &[&str] = &[
+    ".png", ".jpg", ".jpeg", ".svg", ".ico", ".webp",
+];
+
+/// Validates icon string (preset name, data:image/, http(s) URL, or image file path).
+pub fn validate_icon(icon: &str, path: &str, errors: &mut Vec<ValidationError>) {
+    let trimmed = icon.trim();
+    if trimmed.is_empty() {
+        errors.push(ValidationError::new(
+            path,
+            "아이콘 이름 또는 경로가 비어 있습니다.",
+        ));
+        return;
+    }
+
+    if trimmed.chars().any(|c| c.is_control()) {
+        errors.push(ValidationError::new(
+            path,
+            "아이콘 문자열에 제어 문자를 포함할 수 없습니다.",
+        ));
+        return;
+    }
+
+    if trimmed.starts_with("data:image/") {
+        if trimmed.len() > 256 * 1024 {
+            errors.push(ValidationError::new(
+                path,
+                "데이터 URI 아이콘이 너무 큽니다 (최대 256KB).",
+            ));
+            return;
+        }
+        let lower = trimmed.to_ascii_lowercase();
+        if lower.contains("<script") || lower.contains("javascript:") || lower.contains("onload") || lower.contains("onerror") {
+            errors.push(ValidationError::new(
+                path,
+                "아이콘 데이터에 허용되지 않는 스크립트 요소가 포함되어 있습니다.",
+            ));
+            return;
+        }
+        return;
+    }
+
+    if trimmed.starts_with("http://") || trimmed.starts_with("https://") {
+        if trimmed.len() > 2048 {
+            errors.push(ValidationError::new(
+                path,
+                "URL 아이콘 길이가 너무 깁니다 (최대 2048자).",
+            ));
+        }
+        return;
+    }
+
+    if ALLOWED_PRESET_ICONS.contains(&trimmed) {
+        return;
+    }
+
+    let lower = trimmed.to_ascii_lowercase();
+    if ALLOWED_IMAGE_EXTENSIONS.iter().any(|ext| lower.ends_with(ext)) {
+        return;
+    }
+
+    errors.push(ValidationError::new(
+        path,
+        format!(
+            "'{icon}'은(는) 유효하지 않은 아이콘입니다. 허용값: 프리셋 아이콘({:?}), data:image/, http(s) URL, 또는 이미지 파일 확장자({:?})",
+            ALLOWED_PRESET_ICONS, ALLOWED_IMAGE_EXTENSIONS
+        ),
+    ));
+}
 
 /// Validates placeholders in a string value.
 fn validate_placeholders(value: &str, path: &str, errors: &mut Vec<ValidationError>) {
@@ -203,15 +278,14 @@ pub fn validate_config(config: &MenuConfig) -> Result<(), Vec<ValidationError>> 
                     if let Some(args) = &app.args {
                         validate_placeholders(args, &format!("{item_path}/args"), &mut errors);
                     }
+
+                    if let Some(icon) = &app.icon {
+                        validate_icon(icon, &format!("{item_path}/icon"), &mut errors);
+                    }
                 }
                 Item::Terminal(term) => {
                     if let Some(icon) = &term.icon {
-                        if !ALLOWED_ICONS.contains(&icon.as_str()) {
-                            errors.push(ValidationError::new(
-                                format!("{item_path}/icon"),
-                                format!("'{icon}'은(는) 허용되지 않는 아이콘입니다. 허용값: {ALLOWED_ICONS:?}"),
-                            ));
-                        }
+                        validate_icon(icon, &format!("{item_path}/icon"), &mut errors);
                     }
 
                     match term.action {
@@ -278,15 +352,14 @@ pub fn validate_config(config: &MenuConfig) -> Result<(), Vec<ValidationError>> 
                     }
 
                     if let Some(icon) = &folder.icon {
-                        if !ALLOWED_ICONS.contains(&icon.as_str()) {
-                            errors.push(ValidationError::new(
-                                format!("{item_path}/icon"),
-                                format!("'{icon}'은(는) 허용되지 않는 아이콘입니다. 허용값: {ALLOWED_ICONS:?}"),
-                            ));
-                        }
+                        validate_icon(icon, &format!("{item_path}/icon"), &mut errors);
                     }
                 }
                 Item::System(sys) => {
+                    if let Some(icon) = &sys.icon {
+                        validate_icon(icon, &format!("{item_path}/icon"), &mut errors);
+                    }
+
                     if !seen_system_fns.insert(sys.fn_name) {
                         errors.push(ValidationError::new(
                             format!("{item_path}/fn"),

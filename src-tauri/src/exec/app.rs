@@ -89,6 +89,16 @@ fn try_focus_app(path: &str) -> bool {
 pub fn execute_app(item: &AppItem, ctx: &ContextValues) -> Result<(), String> {
     let raw_path = ctx.substitute_raw_text(&item.path);
 
+    let is_url = raw_path.starts_with("http://")
+        || raw_path.starts_with("https://")
+        || raw_path.starts_with("ftp://");
+
+    if is_url {
+        let spec = LaunchSpec::new("explorer.exe").with_args(format!("\"{raw_path}\""));
+        spawn(&spec, Elevation::User).map_err(|e| format!("웹 앱 열기 실패: {e}"))?;
+        return Ok(());
+    }
+
     if item.when_running.unwrap_or(WhenRunning::Focus) == WhenRunning::Focus {
         if try_focus_app(&raw_path) {
             return Ok(());

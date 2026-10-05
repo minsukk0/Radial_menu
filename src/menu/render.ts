@@ -209,6 +209,12 @@ export class MenuRenderer {
   }
 
   private renderIcon(iconName: string, size: number, parent: HTMLElement): SVGElement {
+    const isImage =
+      iconName.startsWith('data:image/') ||
+      iconName.startsWith('http://') ||
+      iconName.startsWith('https://') ||
+      /\.(png|jpe?g|svg|ico|webp)$/i.test(iconName);
+
     const s = this.createSvgElement(
       'svg',
       {
@@ -224,7 +230,23 @@ export class MenuRenderer {
       },
       parent
     );
-    this.createSvgElement('use', { href: `#i-${iconName}` }, s);
+
+    if (isImage) {
+      this.createSvgElement(
+        'image',
+        {
+          href: iconName,
+          x: 2,
+          y: 2,
+          width: 20,
+          height: 20,
+          preserveAspectRatio: 'xMidYMid meet',
+        },
+        s
+      );
+    } else {
+      this.createSvgElement('use', { href: `#i-${iconName}` }, s);
+    }
     return s;
   }
 
@@ -388,11 +410,13 @@ export class MenuRenderer {
             this.createElement('span', { text: '추가' }, lab);
           } else if (slot.item) {
             b.setAttribute('aria-label', slot.item.label);
-            if ('mono' in slot.item && slot.item.mono) {
+            if (slot.item.icon) {
+              this.renderIcon(slot.item.icon, 20, lab);
+            } else if ('mono' in slot.item && slot.item.mono) {
               this.createElement('span', { class: 'mono', text: slot.item.mono }, lab);
             } else {
-              let itemIcon = slot.item.icon;
-              if (!itemIcon && 'fn' in slot.item) {
+              let itemIcon: string | undefined;
+              if ('fn' in slot.item) {
                 itemIcon = getSystemIcon((slot.item as SystemItemConfig).fn);
               }
               this.renderIcon(itemIcon || 'window', 20, lab);

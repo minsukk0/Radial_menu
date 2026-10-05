@@ -28,9 +28,9 @@ export const DEFAULT_CONFIG: MenuConfig = {
       label: '앱',
       icon: 'apps',
       items: [
-        { label: 'codex', path: 'codex.exe', mono: 'Co' },
-        { label: 'claude', path: 'claude.exe', mono: 'Cl' },
-        { label: 'antigravity', path: 'antigravity.exe', mono: 'An' },
+        { label: 'ChatGPT', path: 'https://chatgpt.com', icon: 'gpt' },
+        { label: 'Claude', path: 'https://claude.ai', icon: 'claude' },
+        { label: 'Antigravity', path: 'antigravity.exe', icon: 'antigravity' },
         { label: '메모장', path: 'notepad.exe', mono: '메' },
       ],
     },
