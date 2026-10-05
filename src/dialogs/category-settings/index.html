@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>상위 메뉴 설정</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../shared/tokens.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    :root {
+      --accent: var(--rm-accent, #1E9BFF);
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--rm-color-surface-dialog, rgba(11, 17, 20, 0.96));
+      color: var(--rm-color-text-primary, #EAF6F6);
+      font-family: 'IBM Plex Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+      user-select: none;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(166, 241, 236, 0.3);
+      box-shadow: 0 24px 70px rgba(3, 8, 10, 0.5);
+    }
+    button, input, a {
+      font: inherit;
+      color: inherit;
+      margin: 0;
+    }
+    button {
+      cursor: pointer;
+    }
+    button:focus-visible, a:focus-visible, input:focus-visible {
+      outline: 2px solid #2CE8FF;
+      outline-offset: 2px;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(166, 241, 236, 0.2);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(166, 241, 236, 0.4);
+    }
+
+    /* Common Components */
+    .lbl {
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 500;
+      color: #9FB4B6;
+    }
+    .note {
+      font-size: 11.5px;
+      line-height: 18px;
+      color: #9FB4B6;
+    }
+    .field {
+      height: 34px;
+      min-width: 0;
+      border-radius: 8px;
+      border: 1px solid rgba(166, 241, 236, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      font-size: 13px;
+      color: #EAF6F6;
+      white-space: nowrap;
+      overflow: hidden;
+      transition: border-color 0.12s, box-shadow 0.12s;
+    }
+    input.field {
+      width: 100%;
+      outline: none;
+    }
+    input.field:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 28%, transparent);
+    }
+    .ico {
+      height: 38px;
+      padding: 0;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.05);
+      color: #9FB4B6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.12s, border-color 0.12s, background-color 0.12s;
+    }
+    .ico:hover {
+      color: #EAF6F6;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .ico.on {
+      color: #FFFFFF;
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 26%, transparent);
+    }
+    .tile {
+      position: relative;
+      height: 66px;
+      padding: 0;
+      border-radius: 10px;
+      border: 1px solid rgba(166, 241, 236, 0.16);
+      background: rgba(255, 255, 255, 0.04);
+      color: #C6D8DA;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      transition: color 0.12s, border-color 0.12s, background-color 0.12s;
+    }
+    .tile:hover {
+      color: #FFFFFF;
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 18%, transparent);
+    }
+    .btn {
+      flex: none;
+      height: 34px;
+      padding: 0 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(166, 241, 236, 0.26);
+      background: rgba(255, 255, 255, 0.05);
+      color: #EAF6F6;
+      font-size: 13px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: border-color 0.12s, filter 0.12s, background-color 0.12s;
+    }
+    .btn:hover:not(:disabled) {
+      border-color: rgba(166, 241, 236, 0.55);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .btn:disabled {
+      color: #6F8386;
+      border-color: rgba(166, 241, 236, 0.14);
+      cursor: default;
+    }
+    .btn.primary {
+      border-color: transparent;
+      background: var(--accent);
+      font-weight: 600;
+    }
+    .btn.primary:hover:not(:disabled) {
+      filter: brightness(1.08);
+    }
+    .btn.sm {
+      height: 28px;
+      padding: 0 12px;
+      font-size: 12.5px;
+    }
+    .btn.danger {
+      border-color: rgba(255, 138, 138, 0.5);
+      background: rgba(255, 107, 107, 0.14);
+      color: #FF9B9B;
+    }
+    .btn.danger:hover:not(:disabled) {
+      border-color: #FF9B9B;
+      background: rgba(255, 107, 107, 0.24);
+    }
+    .x {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 0;
+      background: transparent;
+      color: #9FB4B6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: color 0.12s, background-color 0.12s;
+    }
+    .x:hover {
+      color: #EAF6F6;
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    /* Layout Sections */
+    .header {
+      flex: none;
+      height: 56px;
+      padding: 0 14px 0 22px;
+      border-bottom: 1px solid rgba(166, 241, 236, 0.14);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 600;
+    }
+    .body-content {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+    }
+
+    /* Left Sidebar */
+    .sidebar {
+      flex: none;
+      width: 248px;
+      padding: 18px 20px;
+      border-right: 1px solid rgba(166, 241, 236, 0.14);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .preview-box {
+      position: relative;
+      flex: none;
+      width: 200px;
+      height: 200px;
+      margin: 2px auto 0;
+    }
+    .pvi {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      color: #C6D8DA;
+      pointer-events: none;
+    }
+    .pvi.on {
+      color: #FFFFFF;
+    }
+    .pvi.blank {
+      color: rgba(198, 216, 218, 0.55);
+    }
+    .icon-grid {
+      margin-top: 6px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    /* Right Main Panel */
+    .main-panel {
+      flex: 1;
+      min-width: 0;
+      padding: 18px 24px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .category-list {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .row {
+      flex: none;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      height: 44px;
+      padding-right: 6px;
+      border-radius: 10px;
+      border: 1px solid rgba(166, 241, 236, 0.16);
+      background: rgba(255, 255, 255, 0.04);
+      transition: border-color 0.12s, background-color 0.12s, opacity 0.12s;
+    }
+    .row.on {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 16%, transparent);
+    }
+    .row.warn {
+      gap: 8px;
+      padding: 0 8px 0 14px;
+      border-color: rgba(255, 138, 138, 0.5);
+      background: rgba(255, 107, 107, 0.14);
+    }
+    .rowmain {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 8px 0 10px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: #EAF6F6;
+      text-align: left;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .grip {
+      flex: none;
+      color: #6F8386;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      padding: 6px 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: none;
+    }
+    .grip svg {
+      pointer-events: none;
+    }
+    .grip:active {
+      cursor: grabbing;
+    }
+    .drag-floating-clone {
+      pointer-events: none !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+    .row.empty {
+      border-color: rgba(166, 241, 236, 0.08);
+      background: rgba(255, 255, 255, 0.02);
+      color: #6F8386;
+    }
+    .row.empty .cname {
+      color: #6F8386;
+    }
+    .row.empty .kind {
+      background: rgba(255, 255, 255, 0.04);
+      color: #6F8386;
+    }
+    .row.empty .cico {
+      background: rgba(255, 255, 255, 0.03);
+      color: #6F8386;
+    }
+    .row.empty .cnt {
+      color: #6F8386;
+    }
+    .num {
+      flex: none;
+      width: 16px;
+      text-align: center;
+      font-size: 12px;
+      color: #9FB4B6;
+      font-variant-numeric: tabular-nums;
+    }
+    .cico {
+      flex: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #C6D8DA;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .row.on .cico {
+      background: color-mix(in srgb, var(--accent) 30%, transparent);
+      color: #FFFFFF;
+    }
+    .cname {
+      flex: 1;
+      min-width: 0;
+      font-size: 13.5px;
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .kind {
+      flex: none;
+      padding: 1px 8px;
+      border-radius: 999px;
+      background: rgba(166, 241, 236, 0.1);
+      color: #A6F1EC;
+      font-size: 11px;
+      line-height: 18px;
+    }
+    .cnt {
+      flex: none;
+      width: 58px;
+      text-align: right;
+      font-size: 12px;
+      color: #9FB4B6;
+    }
+    .ib {
+      flex: none;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      color: #9FB4B6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.12s, background-color 0.12s;
+    }
+    .ib:hover:not(:disabled) {
+      color: #EAF6F6;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .ib.del:hover:not(:disabled) {
+      color: #FF9B9B;
+      background: rgba(255, 107, 107, 0.14);
+    }
+    .ib:disabled {
+      color: #6F8386;
+      opacity: 0.5;
+      background: transparent;
+      cursor: default;
+    }
+
+    /* Drag and Drop Visual Feedback */
+    .row.dragging {
+      opacity: 0.4;
+      border-style: dashed;
+    }
+    .row.drag-over {
+      border-color: var(--accent) !important;
+      background: color-mix(in srgb, var(--accent) 20%, transparent) !important;
+    }
+    .row.drag-over-top {
+      border-top: 2px solid var(--accent);
+    }
+    .row.drag-over-bottom {
+      border-bottom: 2px solid var(--accent);
+    }
+
+    /* Footer */
+    .footer {
+      flex: none;
+      height: 60px;
+      padding: 0 22px;
+      border-top: 1px solid rgba(166, 241, 236, 0.14);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- SVG Symbol Icons Definition -->
+  <svg width="0" height="0" aria-hidden="true" style="position: absolute; pointer-events: none;">
+    <defs>
+      <symbol id="a-apps" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"></rect><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"></rect><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"></rect><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"></rect></symbol>
+      <symbol id="a-terminal" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2.5"></rect><path d="m7 9.5 3 2.5-3 2.5M12.5 15H17"></path></symbol>
+      <symbol id="a-folder" viewBox="0 0 24 24"><path d="M3.5 7.5a2 2 0 0 1 2-2h3.6l2 2.2h7.4a2 2 0 0 1 2 2v7.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"></path></symbol>
+      <symbol id="a-power" viewBox="0 0 24 24"><path d="M12 3v8.5"></path><path d="M7.1 6.7a8 8 0 1 0 9.8 0"></path></symbol>
+      <symbol id="a-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><ellipse cx="12" cy="12" rx="3.6" ry="8.5"></ellipse><path d="M3.5 12h17"></path></symbol>
+      <symbol id="a-window" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"></rect><path d="M3 9.5h18"></path></symbol>
+      <symbol id="a-paste" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2.5"></rect><path d="M8.5 8.5h7M8.5 12h7M8.5 15.5h4"></path></symbol>
+      <symbol id="a-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"></path></symbol>
+      <symbol id="a-trash" viewBox="0 0 24 24"><path d="M5 7h14M10 7V5h4v2M7 7l.8 12.5h8.4L17 7M10 10.5v5.5M14 10.5v5.5"></path></symbol>
+      <symbol id="a-up" viewBox="0 0 24 24"><path d="M6.5 14.5 12 9l5.5 5.5"></path></symbol>
+      <symbol id="a-down" viewBox="0 0 24 24"><path d="M6.5 9.5 12 15l5.5-5.5"></path></symbol>
+      <symbol id="a-plus" viewBox="0 0 24 24"><path d="M12 6v12M6 12h12"></path></symbol>
+      <symbol id="a-add" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" stroke-dasharray="2.8 3"></circle><path d="M12 8v8M8 12h8"></path></symbol>
+      <symbol id="a-close" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7 7 17"></path></symbol>
+    </defs>
+  </svg>
+
+  <!-- Header -->
+  <div class="header">
+    <h1>상위 메뉴 설정</h1>
+    <span style="flex: 1"></span>
+    <button class="x" id="btn-close" aria-label="닫기">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+        <use href="#a-close"></use>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Body Content -->
+  <div class="body-content">
+    <!-- Left Column: Preview & Editor -->
+    <div class="sidebar">
+      <span class="lbl">메뉴 미리보기</span>
+      <div class="preview-box" id="preview-box">
+        <svg width="200" height="200" viewBox="0 0 200 200" role="img" aria-label="분류 순서대로 놓인 상위 메뉴 미리보기" style="display: block">
+          <defs>
+            <radialGradient id="cg" gradientUnits="userSpaceOnUse" cx="100" cy="100" r="92">
+              <stop offset="0.22" stop-opacity="0.22" style="stop-color: var(--accent)"></stop>
+              <stop offset="1" stop-opacity="0.82" style="stop-color: var(--accent)"></stop>
+            </radialGradient>
+          </defs>
+          <circle cx="100" cy="100" r="92" fill="#03080A" fill-opacity="0.6" stroke="#A6F1EC" stroke-opacity="0.5" stroke-width="0.8"></circle>
+          <path id="pv-sel" d="" fill="url(#cg)"></path>
+          <path id="pv-lines" d="" fill="none" stroke="#A6F1EC" stroke-opacity="0.2" stroke-width="0.8"></path>
+          <path id="pv-arc" d="" fill="none" stroke="#2CE8FF" stroke-width="2.5" stroke-linecap="round"></path>
+          <circle cx="100" cy="100" r="14" fill="#040C10" fill-opacity="0.7" stroke="#A6F1EC" stroke-width="0.8"></circle>
+        </svg>
+        <div id="pv-icons-layer" style="position: absolute; left: 0; top: 0; width: 200px; height: 200px; pointer-events: none;"></div>
+      </div>
+      <div id="pv-caption" style="margin-top: 4px; text-align: center; font-size: 12px; line-height: 18px; color: #C6D8DA">분류 0개 · 4칸</div>
+
+      <span class="lbl" style="margin-top: 14px">이름</span>
+      <input class="field" id="inp-name" type="text" aria-label="선택한 분류의 이름" maxlength="10" style="flex: none; margin-top: 6px">
+
+      <span class="lbl" style="margin-top: 14px">아이콘</span>
+      <div class="icon-grid" id="icon-grid">
+        <button class="ico" data-icon="apps" aria-label="격자"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-apps"></use></svg></button>
+        <button class="ico" data-icon="terminal" aria-label="터미널"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-terminal"></use></svg></button>
+        <button class="ico" data-icon="folder" aria-label="폴더"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-folder"></use></svg></button>
+        <button class="ico" data-icon="power" aria-label="전원"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-power"></use></svg></button>
+        <button class="ico" data-icon="globe" aria-label="지구본"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-globe"></use></svg></button>
+        <button class="ico" data-icon="window" aria-label="창"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-window"></use></svg></button>
+        <button class="ico" data-icon="paste" aria-label="문서"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-paste"></use></svg></button>
+        <button class="ico" data-icon="play" aria-label="재생"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-play"></use></svg></button>
+      </div>
+
+      <div class="note" id="kind-note" style="margin-top: 12px">종류는 앱입니다. 만든 뒤에는 바꿀 수 없습니다.</div>
+    </div>
+
+    <!-- Right Column: Category List & Add -->
+    <div class="main-panel">
+      <div style="flex: none; display: flex; align-items: baseline; gap: 8px">
+        <span class="lbl" id="list-title">분류 0개</span>
+        <span style="flex: 1"></span>
+        <span class="note">위에서부터 12시 방향, 시계 방향으로 놓입니다</span>
+      </div>
+
+      <!-- Categories Container -->
+      <div class="category-list" id="category-list"></div>
+
+      <!-- Add Category Area -->
+      <div id="add-btn-wrap" style="flex: none; margin-top: 10px; display: flex; align-items: center; gap: 12px">
+        <button class="btn" id="btn-open-add">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><use href="#a-plus"></use></svg>분류 추가
+        </button>
+        <span class="note" id="add-max-note"></span>
+      </div>
+
+      <!-- Kind Picker Box (Accordion / Expanded on "+ 분류 추가") -->
+      <div id="add-picker-box" style="display: none; flex: none; margin-top: 10px; padding: 12px; border-radius: 10px; border: 1px solid rgba(166, 241, 236, 0.16); background: rgba(166, 241, 236, 0.05)">
+        <div style="display: flex; align-items: center; gap: 8px">
+          <span class="lbl" style="color: #EAF6F6">어떤 종류의 분류를 추가할까요?</span>
+          <span style="flex: 1"></span>
+          <button class="btn sm" id="btn-cancel-add">취소</button>
+        </div>
+        <div style="margin-top: 10px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+          <button class="tile" data-kind="app">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-apps"></use></svg>앱
+          </button>
+          <button class="tile" data-kind="terminal">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-terminal"></use></svg>터미널
+          </button>
+          <button class="tile" data-kind="folder">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-folder"></use></svg>폴더·주소
+          </button>
+          <button class="tile" data-kind="system">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a-power"></use></svg>시스템
+          </button>
+        </div>
+        <div class="note" style="margin-top: 8px">같은 종류를 여러 번 추가할 수 있습니다. 이름은 추가한 뒤 왼쪽에서 바꿉니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span style="font-size: 12px; color: #9FB4B6">분류 안의 항목은 메뉴에서 그 분류의 "추가" 칸으로 등록합니다.</span>
+    <span style="flex: 1"></span>
+    <span id="save-status" style="font-size: 12px; color: #A6F1EC; opacity: 0; transition: opacity 0.2s; margin-right: 8px">자동 저장됨</span>
+    <button class="btn" id="btn-close-dialog">닫기</button>
+  </div>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>
