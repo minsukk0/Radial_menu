@@ -35,6 +35,8 @@ pub fn setup_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
 
     let icon = if let Some(icon) = app.default_window_icon() {
         icon.clone()
+    } else if let Ok(icon) = tauri::image::Image::from_bytes(include_bytes!("../icons/32x32.png")) {
+        icon
     } else if let Ok(icon) = tauri::image::Image::from_app_icon_resource(32) {
         icon
     } else {
